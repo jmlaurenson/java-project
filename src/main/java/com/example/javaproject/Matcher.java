@@ -15,7 +15,6 @@ public class Matcher {
 		orders = Arrays.copyOf(orders, orders.length+1);
 		int length = orders.length;
 		orders[length-1] = new Order(account, price, quantity, action);
-		System.out.println(orders.length);
 		return orders;
 	}
 
