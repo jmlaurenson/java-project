@@ -9,10 +9,10 @@ public class Order {
     private int account;
     private float price;
     private int quantity;
-    private actionType action;
+    private ActionType action;
     private boolean isValid;
 
-    public Order(int account, float price, int quantity, actionType action) {
+    public Order(int account, float price, int quantity, ActionType action) {
         this.account = account;
         this.price = price;
         this.quantity = quantity;
