@@ -22,11 +22,8 @@ public class Order {
     }
 
     private void checkIfValid(){
-        System.out.println("Account: "+this.account);
         if(this.account<0 || this.price<=0 || this.quantity<1){
             this.isValid=false;
         }
     }
-
-
 }

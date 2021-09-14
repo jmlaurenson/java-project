@@ -19,7 +19,7 @@ class JavaProjectApplicationTests {
 	void matcherAddsOrders() {
 		//Act
 		matcher.addNewOrder(1,40,30,actionType.BUY);
-		Order order = matcher.getOrders()[0];
+		Order order = matcher.getBuyOrders()[0];
 
 		//Assert
 		assertEquals(order.getPrice(), 40);
@@ -34,12 +34,23 @@ class JavaProjectApplicationTests {
 		matcher.addNewOrder(-10,40,30,actionType.BUY);
 		matcher.addNewOrder(1,0,30,actionType.BUY);
 		matcher.addNewOrder(1,40,0,actionType.BUY);
-		Order[] orders = matcher.getOrders();
+		Order[] orders = matcher.getBuyOrders();
 
 		//Assert
 		assertEquals(orders[0].isValid(), false);
 		assertEquals(orders[1].isValid(), false);
 		assertEquals(orders[2].isValid(), false);
 	}
+	@Test
+	void matcherAddsBuyOrdersToCorrectPlace() {
+		//Act
+		matcher.addNewOrder(1,40,30,actionType.BUY);
+		matcher.addNewOrder(1,30,30,actionType.BUY);
+		Order order0 = matcher.getBuyOrders()[0];
+		Order order1 = matcher.getBuyOrders()[1];
 
+		//Assert
+		assertEquals(order0.getPrice(), 30);
+		assertEquals(order1.getPrice(), 40);
+	}
 }
