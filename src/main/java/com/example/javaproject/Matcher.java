@@ -1,10 +1,11 @@
 package com.example.javaproject;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.*;
 
-@SpringBootApplication
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Matcher {
 	private Order[] orders = {};
 
@@ -16,13 +17,7 @@ public class Matcher {
 		this.orders[length-1] = new Order(account, price, quantity, action);
 	}
 
-	public Order[] getOrders() {
-		return orders;
-	}
-
-	public void setOrders(Order[] orders) {
-		this.orders = orders;
-	}
+	
 }
 
 
