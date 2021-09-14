@@ -6,15 +6,27 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Order {
-    @Getter @Setter private int account;
-    @Getter @Setter private float price;
-    @Getter @Setter private int quantity;
-    @Getter @Setter private actionType action;
+    private int account;
+    private float price;
+    private int quantity;
+    private actionType action;
+    private boolean isValid;
 
     public Order(int account, float price, int quantity, actionType action) {
         this.account = account;
         this.price = price;
         this.quantity = quantity;
         this.action = action;
+        this.isValid = true;
+        checkIfValid();
     }
+
+    private void checkIfValid(){
+        System.out.println("Account: "+this.account);
+        if(this.account<0 || this.price<=0 || this.quantity<1){
+            this.isValid=false;
+        }
+    }
+
+
 }
