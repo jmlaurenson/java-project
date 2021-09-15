@@ -225,4 +225,36 @@ class MatcherTest {
         assertEquals(newList.size(),1);
         assertEquals(newList.get(0).getQuantity(),20);
     }
+
+    @Test
+    void makeTwoAndAHalfBuyMatches() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 10, ActionType.BUY));
+        matcher.addNewOrder(new Order(3, 40, 10, ActionType.BUY));
+        matcher.addNewOrder(new Order(4, 40, 10, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 25, ActionType.SELL));
+
+        List<Order> newList = matcher.getBuyOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+        assertEquals(newList.get(0).getQuantity(),5);
+        assertEquals(newList.get(0).getAccount(),4);
+    }
+
+    @Test
+    void makeTwoAndAHalfSellMatches() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 10, ActionType.SELL));
+        matcher.addNewOrder(new Order(3, 40, 10, ActionType.SELL));
+        matcher.addNewOrder(new Order(4, 40, 10, ActionType.SELL));
+        matcher.completeTrade(new Order(4, 60, 25, ActionType.BUY));
+
+        List<Order> newList = matcher.getSellOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+        assertEquals(newList.get(0).getQuantity(),5);
+        assertEquals(newList.get(0).getAccount(),4);
+    }
 }

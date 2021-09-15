@@ -11,8 +11,9 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class Matcher {
 
-    private List<Order> buyOrders;
-    private List<Order> sellOrders;
+    private List<Order> buyOrders = new ArrayList<Order>();
+    private List<Order> sellOrders = new ArrayList<Order>();
+    private List<Trade> trades = new ArrayList<Trade>();
 
     public void addNewOrder(Order order) {
         if (order.getAction() == ActionType.BUY) {
@@ -55,21 +56,38 @@ public class Matcher {
     }
 
     public void completeTrade(Order order){
-        Order match = findMatchingOrder(order);
-        if(match==null){
-            addNewOrder(order);
-        }
-        else{
-            if(order.getAction()==ActionType.BUY){
-                this.sellOrders.remove(match);
+        while (order.getQuantity()>0){
+            Order match = findMatchingOrder(order);
+            if(match==null){
+                addNewOrder(order);
+                return;
             }
             else{
-                this.buyOrders.remove(match);
+                createTrade(match, order);
+                //If the quantity of the matched order is less than the new orders quantity
+                if(match.getQuantity()-order.getQuantity()>0){
+                    match.setQuantity(match.getQuantity()-order.getQuantity());
+                    addNewOrder(match);
+                }
+                order.setQuantity(order.getQuantity()-match.getQuantity());
+                if(order.getAction()==ActionType.BUY){
+
+                    this.sellOrders.remove(match);
+                }
+                else{
+                    this.buyOrders.remove(match);
+                }
             }
         }
     }
 
-
+    public void createTrade(Order oldOrder, Order newOrder){
+        int quantity = newOrder.getQuantity();
+        if(oldOrder.getQuantity()< newOrder.getQuantity()){
+            quantity = oldOrder.getQuantity();
+        }
+        this.trades.add(new Trade(oldOrder, newOrder, quantity));
+    }
 }
 
 
