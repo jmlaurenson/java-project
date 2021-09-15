@@ -42,26 +42,21 @@ public class Matcher {
 
     public Order findMatchingOrder(Order order) {
         List<Order> orderList;
-        int index = -1;
-        while (index == -1) {
-            if (order.getAction() == ActionType.BUY) {
-                orderList = this.sellOrders;
-            } else {
-                orderList = this.buyOrders;
-            }
-            if (orderList.size() == 0) {
-                return null;
-            }
-            index = traverseList(order, orderList);
-            // If no match is found
-            if (index == -1) {
-                return null;
-            } else {
-                return orderList.get(index);
-            }
-
+        if (order.getAction() == ActionType.BUY) {
+            orderList = this.sellOrders;
+        } else {
+            orderList = this.buyOrders;
         }
-        return null;
+        if (orderList.size() == 0) {
+            return null;
+        }
+        int index = traverseList(order, orderList);
+        // If no match is found
+        if (index == -1) {
+            return null;
+        } else {
+            return orderList.get(index);
+        }
     }
 
 

@@ -134,11 +134,21 @@ class MatcherTest {
     }
 
     @Test
-    void noMatchInArray() {
+    void noMatchInArrayBUY() {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.SELL));
         matcher.addNewOrder(new Order(2, 40, 30, ActionType.SELL));
         Order match = matcher.findMatchingOrder(new Order(30, 30, 30, ActionType.BUY));
+
+        //Assert
+        assertNull(match);
+    }
+    @Test
+    void noMatchInArraySELL() {
+        //Act
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
+        Order match = matcher.findMatchingOrder(new Order(30, 50, 30, ActionType.SELL));
 
         //Assert
         assertNull(match);
