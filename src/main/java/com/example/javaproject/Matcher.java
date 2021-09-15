@@ -59,6 +59,13 @@ public class Matcher {
         }
     }
 
+    public void completeTrade(Order order){
+        Order match = findMatchingOrder(order);
+        if(match==null){
+            addNewOrder(order);
+        }
+    }
+
 
 }
 

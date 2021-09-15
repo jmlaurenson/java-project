@@ -153,4 +153,26 @@ class MatcherTest {
         //Assert
         assertNull(match);
     }
+    @Test
+    void addOrderIfNoneFound() {
+        //Act
+        matcher.completeTrade(new Order(30, 50, 30, ActionType.SELL));
+        List<Order> newList = matcher.getSellOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+    }
+
+    @Test
+    void removeOrderIfFound() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(3, 30, 30, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 30, ActionType.SELL));
+        List<Order> newList = matcher.getBuyOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+        assertEquals(newList.get(0).getAccount(),2);
+    }
 }
