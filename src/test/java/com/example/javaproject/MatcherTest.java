@@ -18,7 +18,7 @@ class MatcherTest {
     @Test
     void matcherAddsOrders() {
         //Act
-        matcher.addNewOrder(1, 40, 30, ActionType.BUY);
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
         Order order = matcher.getBuyOrders().get(0);
 
         //Assert
@@ -31,8 +31,8 @@ class MatcherTest {
     @Test
     void differentActionsAreSeparated() {
         //Act
-        matcher.addNewOrder(1, 40, 30, ActionType.BUY);
-        matcher.addNewOrder(2, 40, 30, ActionType.SELL);
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.SELL));
         Order buyOrder = matcher.getBuyOrders().get(0);
         Order sellOrder = matcher.getSellOrders().get(0);
 
@@ -44,9 +44,9 @@ class MatcherTest {
     @Test
     void invalidOrdersAreCaught() {
         //Act
-        matcher.addNewOrder(-10, 40, 30, ActionType.BUY);
-        matcher.addNewOrder(1, 0, 30, ActionType.BUY);
-        matcher.addNewOrder(1, 40, 0, ActionType.BUY);
+        matcher.addNewOrder(new Order(-10, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(1, 0, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(1, 40, 0, ActionType.BUY));
         List<Order> orders = matcher.getBuyOrders();
 
         //Assert
@@ -58,8 +58,8 @@ class MatcherTest {
     @Test
     void matcherAddsBuyOrdersToCorrectPlace() {
         //Act
-        matcher.addNewOrder(1, 40, 30, ActionType.BUY);
-        matcher.addNewOrder(1, 30, 30, ActionType.BUY);
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(1, 30, 30, ActionType.BUY));
         Order order0 = matcher.getBuyOrders().get(0);
         Order order1 = matcher.getBuyOrders().get(1);
 
@@ -71,8 +71,8 @@ class MatcherTest {
     @Test
     void oldestOrdersAreFirstInList() {
         //Act
-        matcher.addNewOrder(1, 40, 30, ActionType.BUY);
-        matcher.addNewOrder(2, 40, 30, ActionType.BUY);
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
         Order order0 = matcher.getBuyOrders().get(0);
         Order order1 = matcher.getBuyOrders().get(1);
 
