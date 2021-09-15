@@ -1,10 +1,12 @@
 package com.example.javaproject;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Order {
     private int account;
     private float price;
@@ -21,9 +23,9 @@ public class Order {
         checkIfValid();
     }
 
-    private void checkIfValid(){
-        if(this.account<0 || this.price<=0 || this.quantity<1){
-            this.isValid=false;
+    private void checkIfValid() {
+        if (this.account < 0 || this.price <= 0 || this.quantity < 1) {
+            this.isValid = false;
         }
     }
 }
