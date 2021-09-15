@@ -80,4 +80,56 @@ class MatcherTest {
         assertEquals(order0.getAccount(), 1);
         assertEquals(order1.getAccount(), 2);
     }
+
+    @Test
+    void findExactMatchOneValue() {
+        //Act
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.SELL));
+        Order match = matcher.findMatchingOrder(new Order(2, 40, 30, ActionType.BUY));
+
+        //Assert
+        assertEquals(match.getAccount(), 1);
+    }
+
+    @Test
+    void findExactMatchTwoValues() {
+        //Act
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(2, 30, 30, ActionType.BUY));
+        Order match = matcher.findMatchingOrder(new Order(3, 30, 30, ActionType.SELL));
+
+        //Assert
+        assertEquals(match.getAccount(), 2);
+    }
+
+    @Test
+    void findOldestMatchSELL() {
+        //Act
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
+        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.SELL));
+
+        //Assert
+        assertEquals(match.getAccount(), 1);
+    }
+
+    @Test
+    void findOldestMatchBUY() {
+        //Act
+        matcher.addNewOrder(new Order(1, 40, 30, ActionType.SELL));
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.SELL));
+        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
+
+        //Assert
+        assertEquals(match.getAccount(), 1);
+    }
+
+    @Test
+    void findOldestMatch() {
+        //Act
+        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
+
+        //Assert
+        assertNull(match);
+    }
 }

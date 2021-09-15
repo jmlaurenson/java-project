@@ -24,16 +24,39 @@ public class Matcher {
         }
     }
 
-    public void traverseList(Order order, List<Order> orderList){
-        System.out.println(Collections.binarySearch(orderList, order));
+    public int traverseList(Order order, List<Order> orderList){
+        return Collections.binarySearch(orderList, order);
     }
 
-    public void findMatchingOrder(Order order) {
-        if (order.getAction() == ActionType.BUY) {
-            traverseList(order, this.sellOrders);
-        } else {
-            //Look in buy orders List
+    public Order findMatchingOrder(Order order) {
+        List<Order> orderList;
+        int index = -1;
+        while(index == -1){
+            if (order.getAction() == ActionType.BUY) {
+                orderList = this.sellOrders;
+            }
+            else {
+                orderList = this.buyOrders;
+            }
+            if(orderList.size()==0){
+                return null;
+            }
+            index = traverseList(order, orderList);
+            // If no match is found
+            if(index == -1){
+                if(order.getAction()==ActionType.BUY) {
+                    order.setPrice(order.getPrice() - 1);
+                }
+                else{
+                    order.setPrice(order.getPrice() + 1);
+                }
+            }
+            else{
+                return orderList.get(index);
+            }
+
         }
+        return order;
     }
 
 
