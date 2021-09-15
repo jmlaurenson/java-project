@@ -23,15 +23,10 @@ public class Matcher {
             Collections.sort(this.sellOrders);
         }
     }
-
-    public void printOrderDetails(Order order) {
-        System.out.println("Account: " + order.getAccount() + ", Price: " + order.getPrice() + ", Quantity: " + order.getQuantity() + ", Action: " + order.getAction());
-    }
-
+    
     public int traverseList(Order order, List<Order> orderList) {
         for (int i = 0; i < orderList.size(); i++) {
             if (order.getAction() == ActionType.BUY && order.getPrice() >= orderList.get(i).getPrice()) {
-                printOrderDetails(orderList.get(i));
                 return i;
             } else if (order.getAction() == ActionType.SELL && order.getPrice() <= orderList.get(i).getPrice()) {
                 return i;
@@ -63,6 +58,14 @@ public class Matcher {
         Order match = findMatchingOrder(order);
         if(match==null){
             addNewOrder(order);
+        }
+        else{
+            if(order.getAction()==ActionType.BUY){
+                this.sellOrders.remove(match);
+            }
+            else{
+                this.buyOrders.remove(match);
+            }
         }
     }
 
