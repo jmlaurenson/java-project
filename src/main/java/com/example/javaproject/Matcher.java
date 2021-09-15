@@ -17,10 +17,27 @@ public class Matcher {
     public void addNewOrder(Order order) {
         if (order.getAction() == ActionType.BUY) {
             this.buyOrders.add(order);
+            Collections.sort(this.buyOrders);
         } else {
             this.sellOrders.add(order);
+            Collections.sort(this.sellOrders);
         }
     }
+
+    public void traverseList(Order order, List<Order> orderList){
+        System.out.println(Collections.binarySearch(orderList, order));
+    }
+
+    public void findMatchingOrder(Order order) {
+        if (order.getAction() == ActionType.BUY) {
+            traverseList(order, this.sellOrders);
+        } else {
+            //Look in buy orders List
+        }
+    }
+
+
+
 
 
 }
