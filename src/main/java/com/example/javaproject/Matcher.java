@@ -24,43 +24,45 @@ public class Matcher {
         }
     }
 
-    public int traverseList(Order order, List<Order> orderList){
-        return Collections.binarySearch(orderList, order);
+    public void printOrderDetails(Order order) {
+        System.out.println("Account: " + order.getAccount() + ", Price: " + order.getPrice() + ", Quantity: " + order.getQuantity() + ", Action: " + order.getAction());
+    }
+
+    public int traverseList(Order order, List<Order> orderList) {
+        for (int i = 0; i < orderList.size(); i++) {
+            if (order.getAction() == ActionType.BUY && order.getPrice() >= orderList.get(i).getPrice()) {
+                printOrderDetails(orderList.get(i));
+                return i;
+            } else if (order.getAction() == ActionType.SELL && order.getPrice() <= orderList.get(i).getPrice()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public Order findMatchingOrder(Order order) {
         List<Order> orderList;
         int index = -1;
-        while(index == -1){
+        while (index == -1) {
             if (order.getAction() == ActionType.BUY) {
                 orderList = this.sellOrders;
-            }
-            else {
+            } else {
                 orderList = this.buyOrders;
             }
-            if(orderList.size()==0){
+            if (orderList.size() == 0) {
                 return null;
             }
             index = traverseList(order, orderList);
             // If no match is found
-            if(index == -1){
-                if(order.getAction()==ActionType.BUY) {
-                    order.setPrice(order.getPrice() - 1);
-                }
-                else{
-                    order.setPrice(order.getPrice() + 1);
-                }
-            }
-            else{
+            if (index == -1) {
+                return null;
+            } else {
                 return orderList.get(index);
             }
 
         }
-        return order;
+        return null;
     }
-
-
-
 
 
 }
