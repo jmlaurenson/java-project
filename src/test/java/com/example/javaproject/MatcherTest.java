@@ -175,4 +175,54 @@ class MatcherTest {
         assertEquals(newList.size(),1);
         assertEquals(newList.get(0).getAccount(),2);
     }
+
+    @Test
+    void makeTwoMatches() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 10, ActionType.BUY));
+        matcher.addNewOrder(new Order(3, 30, 20, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 30, ActionType.SELL));
+        List<Order> newList = matcher.getBuyOrders();
+
+        //Assert
+        assertEquals(newList.size(),0);
+    }
+
+    @Test
+    void makeTwoMatchesOneRemaining() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 10, ActionType.BUY));
+        matcher.addNewOrder(new Order(3, 30, 20, ActionType.BUY));
+        matcher.addNewOrder(new Order(5, 40, 10, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 30, ActionType.SELL));
+        List<Order> newList = matcher.getBuyOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+        assertEquals(newList.get(0).getAccount(),5);
+    }
+
+    @Test
+    void makePartMatch() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 10, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 30, ActionType.SELL));
+        List<Order> newList = matcher.getSellOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+        assertEquals(newList.get(0).getQuantity(),20);
+    }
+
+    @Test
+    void makePartMatch2() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 10, ActionType.SELL));
+        List<Order> newList = matcher.getBuyOrders();
+
+        //Assert
+        assertEquals(newList.size(),1);
+        assertEquals(newList.get(0).getQuantity(),20);
+    }
 }

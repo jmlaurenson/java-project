@@ -11,8 +11,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class Matcher {
 
-    private List<Order> buyOrders = new ArrayList<Order>();
-    private List<Order> sellOrders = new ArrayList<Order>();
+    private List<Order> buyOrders;
+    private List<Order> sellOrders;
 
     public void addNewOrder(Order order) {
         if (order.getAction() == ActionType.BUY) {
@@ -23,7 +23,7 @@ public class Matcher {
             Collections.sort(this.sellOrders);
         }
     }
-    
+
     public int traverseList(Order order, List<Order> orderList) {
         for (int i = 0; i < orderList.size(); i++) {
             if (order.getAction() == ActionType.BUY && order.getPrice() >= orderList.get(i).getPrice()) {
