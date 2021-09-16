@@ -26,18 +26,13 @@ public class Matcher {
         }
     }
 
-    public int traverseList(Order order, List<Order> orderList) {
-        List<Order> match = orderList.stream().filter(a -> (a.getPrice() > order.getPrice() && a.getAction() == ActionType.BUY) || (a.getPrice() < order.getPrice() && a.getAction() == ActionType.SELL) ).collect(Collectors.toList());//.findFirst().isPresent(a -> {System.out.println(a.getAccount());});
-        //System.out.println(match.get(0).getPrice());
-
-        for (int i = 0; i < orderList.size(); i++) {
-            if (order.getAction() == ActionType.BUY && order.getPrice() >= orderList.get(i).getPrice()) {
-                return i;
-            } else if (order.getAction() == ActionType.SELL && order.getPrice() <= orderList.get(i).getPrice()) {
-                return i;
-            }
-        }
-        return -1;
+    public Optional<Order> traverseList(Order order, List<Order> orderList) {
+        return(orderList
+                .stream()
+                .filter(a -> (
+                a.getPrice() >= order.getPrice() && a.getAction() == ActionType.BUY)
+                || (a.getPrice() <= order.getPrice() && a.getAction() == ActionType.SELL) )
+                .findFirst());
     }
 
     public Order findMatchingOrder(Order order) {
@@ -50,12 +45,14 @@ public class Matcher {
         if (orderList.size() == 0) {
             return null;
         }
-        int index = traverseList(order, orderList);
-        // If no match is found
-        if (index == -1) {
-            return null;
+        Optional<Order> matchList = traverseList(order, orderList);
+
+        // If a match is found
+        if (matchList.isPresent()) {
+            System.out.println(matchList.get());
+            return matchList.get();
         } else {
-            return orderList.get(index);
+            return null;
         }
     }
 
