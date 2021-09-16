@@ -22,10 +22,10 @@ class MatcherTest {
         Order order = matcher.getBuyOrders().get(0);
 
         //Assert
-        assertEquals(order.getPrice(), 40);
-        assertEquals(order.getAccount(), 1);
-        assertEquals(order.getQuantity(), 30);
-        assertEquals(order.getAction(), ActionType.BUY);
+        assertEquals(40, order.getPrice());
+        assertEquals(1, order.getAccount());
+        assertEquals(30, order.getQuantity());
+        assertEquals(ActionType.BUY, order.getAction());
     }
 
     @Test
@@ -37,8 +37,8 @@ class MatcherTest {
         Order sellOrder = matcher.getSellOrders().get(0);
 
         //Assert
-        assertEquals(buyOrder.getAccount(), 1);
-        assertEquals(sellOrder.getAccount(), 2);
+        assertEquals(1, buyOrder.getAccount());
+        assertEquals(2, sellOrder.getAccount());
     }
 
     @Test
@@ -64,8 +64,8 @@ class MatcherTest {
         Order order1 = matcher.getBuyOrders().get(1);
 
         //Assert
-        assertEquals(order0.getPrice(), 30);
-        assertEquals(order1.getPrice(), 40);
+        assertEquals(30, order0.getPrice());
+        assertEquals(40, order1.getPrice());
     }
 
     @Test
@@ -77,8 +77,8 @@ class MatcherTest {
         Order order1 = matcher.getBuyOrders().get(1);
 
         //Assert
-        assertEquals(order0.getAccount(), 1);
-        assertEquals(order1.getAccount(), 2);
+        assertEquals(1, order0.getAccount());
+        assertEquals(2, order1.getAccount());
     }
 
     @Test
@@ -88,7 +88,7 @@ class MatcherTest {
         Order match = matcher.findMatchingOrder(new Order(2, 40, 30, ActionType.BUY));
 
         //Assert
-        assertEquals(match.getAccount(), 1);
+        assertEquals(1, match.getAccount());
     }
 
     @Test
@@ -99,7 +99,7 @@ class MatcherTest {
         Order match = matcher.findMatchingOrder(new Order(3, 30, 30, ActionType.SELL));
 
         //Assert
-        assertEquals(match.getAccount(), 2);
+        assertEquals(2, match.getAccount());
     }
 
     @Test
@@ -110,7 +110,7 @@ class MatcherTest {
         Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.SELL));
 
         //Assert
-        assertEquals(match.getAccount(), 1);
+        assertEquals(1, match.getAccount());
     }
 
     @Test
@@ -121,7 +121,7 @@ class MatcherTest {
         Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
 
         //Assert
-        assertEquals(match.getAccount(), 1);
+        assertEquals(1, match.getAccount());
     }
 
     @Test
@@ -160,7 +160,7 @@ class MatcherTest {
         List<Order> newList = matcher.getSellOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
+        assertEquals(1, newList.size());
     }
 
     @Test
@@ -172,8 +172,8 @@ class MatcherTest {
         List<Order> newList = matcher.getBuyOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
-        assertEquals(newList.get(0).getAccount(),2);
+        assertEquals(1, newList.size());
+        assertEquals(2, newList.get(0).getAccount());
     }
 
     @Test
@@ -185,7 +185,7 @@ class MatcherTest {
         List<Order> newList = matcher.getBuyOrders();
 
         //Assert
-        assertEquals(newList.size(),0);
+        assertEquals(0, newList.size());
     }
 
     @Test
@@ -198,8 +198,8 @@ class MatcherTest {
         List<Order> newList = matcher.getBuyOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
-        assertEquals(newList.get(0).getAccount(),5);
+        assertEquals(1, newList.size());
+        assertEquals(5, newList.get(0).getAccount());
     }
 
     @Test
@@ -210,8 +210,8 @@ class MatcherTest {
         List<Order> newList = matcher.getSellOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
-        assertEquals(newList.get(0).getQuantity(),20);
+        assertEquals(1, newList.size());
+        assertEquals(20, newList.get(0).getQuantity());
     }
 
     @Test
@@ -222,8 +222,8 @@ class MatcherTest {
         List<Order> newList = matcher.getBuyOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
-        assertEquals(newList.get(0).getQuantity(),20);
+        assertEquals(1, newList.size());
+        assertEquals(20, newList.get(0).getQuantity());
     }
 
     @Test
@@ -237,9 +237,9 @@ class MatcherTest {
         List<Order> newList = matcher.getBuyOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
-        assertEquals(newList.get(0).getQuantity(),5);
-        assertEquals(newList.get(0).getAccount(),4);
+        assertEquals(1, newList.size());
+        assertEquals(5, newList.get(0).getQuantity());
+        assertEquals(4, newList.get(0).getAccount());
     }
 
     @Test
@@ -253,8 +253,37 @@ class MatcherTest {
         List<Order> newList = matcher.getSellOrders();
 
         //Assert
-        assertEquals(newList.size(),1);
-        assertEquals(newList.get(0).getQuantity(),5);
-        assertEquals(newList.get(0).getAccount(),4);
+        assertEquals(1, newList.size());
+        assertEquals(5, newList.get(0).getQuantity());
+        assertEquals(4, newList.get(0).getAccount());
+    }
+
+    @Test
+    void addTrade() {
+        //Act
+        matcher.addNewOrder(new Order(2, 40, 10, ActionType.SELL));
+        matcher.completeTrade(new Order(4, 50, 25, ActionType.BUY));
+        List<Trade> newList = matcher.getTrades();
+
+        //Assert
+        assertEquals(1, newList.size());
+        assertEquals(10, newList.get(0).getQuantity());
+        assertEquals(40, newList.get(0).getPrice());
+    }
+
+    @Test
+    void addTwoTrades() {
+        //Act
+        matcher.addNewOrder(new Order(2, 50, 20, ActionType.BUY));
+        matcher.addNewOrder(new Order(2, 40, 15, ActionType.BUY));
+        matcher.completeTrade(new Order(4, 20, 25, ActionType.SELL));
+        List<Trade> newList = matcher.getTrades();
+
+        //Assert
+        assertEquals(2, newList.size());
+        assertEquals(15, newList.get(0).getQuantity());
+        assertEquals(40,newList.get(0).getPrice());
+        assertEquals(10, newList.get(1).getQuantity());
+        assertEquals(50,newList.get(1).getPrice());
     }
 }
