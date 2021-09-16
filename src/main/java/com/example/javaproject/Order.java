@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class Order {
+public class Order implements Comparable<Order> {
     private int account;
     private float price;
     private int quantity;
@@ -27,5 +27,9 @@ public class Order {
         if (this.account < 0 || this.price <= 0 || this.quantity < 1) {
             this.isValid = false;
         }
+    }
+
+    public int compareTo(Order order) {
+        return Float.compare(this.getPrice(), order.getPrice());
     }
 }
