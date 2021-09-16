@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Getter
@@ -17,23 +16,17 @@ public class Trade {
     private int quantity;
     private String date;
     private String time;
+    private Date datetime = new Date();
 
 
-    public Trade(Order oldOrder, Order newOrder, int quantity) {
+    public Trade(Order oldOrder, Order newOrder) {
         this.oldOrder = oldOrder;
         this.newOrder = newOrder;
         this.price = oldOrder.getPrice();
+        int quantity = newOrder.getQuantity();
+        if(oldOrder.getQuantity()< newOrder.getQuantity()){
+            quantity = oldOrder.getQuantity();
+        }
         this.quantity = quantity;
-    }
-
-    public void setDataTime(){
-        Date dNow = new Date( );
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat ("dd/MM/yyyy");
-        SimpleDateFormat timeFormat =
-                new SimpleDateFormat ("hh:mm");
-        this.date = dateFormat.format(dNow);
-        this.time = timeFormat.format(dNow);
-
     }
 }
