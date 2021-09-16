@@ -1,7 +1,6 @@
 package com.example.javaproject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,34 +25,22 @@ public class Matcher {
         }
     }
 
-    public Optional<Order> traverseList(Order order, List<Order> orderList) {
-        return(orderList
-                .stream()
-                .filter(a -> (
-                a.getPrice() >= order.getPrice() && a.getAction() == ActionType.BUY)
-                || (a.getPrice() <= order.getPrice() && a.getAction() == ActionType.SELL) )
-                .findFirst());
-    }
-
-    public Order findMatchingOrder(Order order) {
+    public Optional<Order> findMatchingOrder(Order order) {
         List<Order> orderList;
         if (order.getAction() == ActionType.BUY) {
             orderList = this.sellOrders;
         } else {
             orderList = this.buyOrders;
         }
-        if (orderList.size() == 0) {
-            return null;
-        }
-        Optional<Order> matchList = traverseList(order, orderList);
 
-        // If a match is found
-        if (matchList.isPresent()) {
-            System.out.println(matchList.get());
-            return matchList.get();
-        } else {
-            return null;
-        }
+        Optional<Order> matchList = orderList
+                .stream()
+                .filter(a -> (
+                        a.getPrice() >= order.getPrice() && a.getAction() == ActionType.BUY)
+                        || (a.getPrice() <= order.getPrice() && a.getAction() == ActionType.SELL) )
+                .findFirst();
+
+        return matchList;
     }
 
     /**
@@ -62,29 +49,28 @@ public class Matcher {
      */
     public void completeTrade(Order order){
         while (order.getQuantity()>0){
-            Order match = findMatchingOrder(order);
+            Optional<Order> match = findMatchingOrder(order);
             //If no match is found
-            if(match==null) {
+            if(match.isEmpty()) {
                 addNewOrder(order);
                 return;
             }
-            this.trades.add(new Trade(match, order));
+            this.trades.add(new Trade(match.get(), order));
             //If the quantity of the matched order is less than the new orders quantity
-            if(match.getQuantity()-order.getQuantity()>0){
-                match.setQuantity(match.getQuantity()-order.getQuantity());
-                addNewOrder(match);
+            if(match.get().getQuantity()-order.getQuantity()>0){
+                match.get().setQuantity(match.get().getQuantity()-order.getQuantity());
+                addNewOrder(match.get());
             }
-            order.setQuantity(order.getQuantity()-match.getQuantity());
+            order.setQuantity(order.getQuantity()-match.get().getQuantity());
 
             //Remove the matched order
             if(order.getAction()==ActionType.BUY){
 
-                this.sellOrders.remove(match);
+                this.sellOrders.remove(match.get());
             }
             else{
-                this.buyOrders.remove(match);
+                this.buyOrders.remove(match.get());
             }
-
         }
     }
 }

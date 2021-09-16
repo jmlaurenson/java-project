@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,7 +86,7 @@ class MatcherTest {
     void findExactMatchOneValue() {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.SELL));
-        Order match = matcher.findMatchingOrder(new Order(2, 40, 30, ActionType.BUY));
+        Order match = matcher.findMatchingOrder(new Order(2, 40, 30, ActionType.BUY)).get();
 
         //Assert
         assertEquals(1, match.getAccount());
@@ -96,7 +97,7 @@ class MatcherTest {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
         matcher.addNewOrder(new Order(2, 30, 30, ActionType.BUY));
-        Order match = matcher.findMatchingOrder(new Order(3, 30, 30, ActionType.SELL));
+        Order match = matcher.findMatchingOrder(new Order(3, 30, 30, ActionType.SELL)).get();
 
         //Assert
         assertEquals(2, match.getAccount());
@@ -107,7 +108,7 @@ class MatcherTest {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
         matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
-        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.SELL));
+        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.SELL)).get();
 
         //Assert
         assertEquals(1, match.getAccount());
@@ -118,7 +119,7 @@ class MatcherTest {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.SELL));
         matcher.addNewOrder(new Order(2, 40, 30, ActionType.SELL));
-        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
+        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY)).get();
 
         //Assert
         assertEquals(1, match.getAccount());
@@ -127,10 +128,10 @@ class MatcherTest {
     @Test
     void noMatchInEmptyArray() {
         //Act
-        Order match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
+        Optional<Order> match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
 
         //Assert
-        assertNull(match);
+        assertFalse(!match.isEmpty());
     }
 
     @Test
@@ -138,20 +139,20 @@ class MatcherTest {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.SELL));
         matcher.addNewOrder(new Order(2, 40, 30, ActionType.SELL));
-        Order match = matcher.findMatchingOrder(new Order(30, 30, 30, ActionType.BUY));
+        Optional<Order> match = matcher.findMatchingOrder(new Order(30, 30, 30, ActionType.BUY));
 
         //Assert
-        assertNull(match);
+        assertFalse(!match.isEmpty());
     }
     @Test
     void noMatchInArraySELL() {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
         matcher.addNewOrder(new Order(2, 40, 30, ActionType.BUY));
-        Order match = matcher.findMatchingOrder(new Order(30, 50, 30, ActionType.SELL));
+        Optional<Order> match = matcher.findMatchingOrder(new Order(30, 50, 30, ActionType.SELL));
 
         //Assert
-        assertNull(match);
+        assertFalse(!match.isEmpty());
     }
     @Test
     void addOrderIfNoneFound() {
