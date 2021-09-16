@@ -25,22 +25,17 @@ public class Matcher {
         }
     }
 
+    private boolean compareOrders(Order order, Order a){
+        return a.getAction() == ActionType.BUY ? a.getPrice() >= order.getPrice() : a.getPrice() <= order.getPrice();
+    }
+
     public Optional<Order> findMatchingOrder(Order order) {
-        List<Order> orderList;
-        if (order.getAction() == ActionType.BUY) {
-            orderList = this.sellOrders;
-        } else {
-            orderList = this.buyOrders;
-        }
+        List<Order> orderList = order.getAction() == ActionType.BUY ? this.sellOrders : this.buyOrders;
 
-        Optional<Order> matchList = orderList
+        return orderList
                 .stream()
-                .filter(a -> (
-                        a.getPrice() >= order.getPrice() && a.getAction() == ActionType.BUY)
-                        || (a.getPrice() <= order.getPrice() && a.getAction() == ActionType.SELL) )
+                .filter(a -> compareOrders(order, a))
                 .findFirst();
-
-        return matchList;
     }
 
     /**

@@ -1,10 +1,15 @@
 package com.example.javaproject;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,18 +47,14 @@ class MatcherTest {
         assertEquals(2, sellOrder.getAccount());
     }
 
-    @Test
-    void invalidOrdersAreCaught() {
-        //Act
-        matcher.addNewOrder(new Order(-10, 40, 30, ActionType.BUY));
-        matcher.addNewOrder(new Order(1, 0, 30, ActionType.BUY));
-        matcher.addNewOrder(new Order(1, 40, 0, ActionType.BUY));
-        List<Order> orders = matcher.getBuyOrders();
+    static Stream<Order> OrderProvider() {
+        return Stream.of(new Order(-10, 40, 30, ActionType.BUY), new Order(1, 0, 30, ActionType.BUY), new Order(1, 40, 0, ActionType.BUY)
+        );}
 
-        //Assert
-        assertFalse(orders.get(0).isValid());
-        assertFalse(orders.get(1).isValid());
-        assertFalse(orders.get(2).isValid());
+    @ParameterizedTest
+    @MethodSource("OrderProvider")
+    void invalidOrdersAreCaught(Order order) {
+        assertFalse(order.isValid());
     }
 
     @Test
@@ -70,6 +71,7 @@ class MatcherTest {
     }
 
     @Test
+    @DisplayName("Check orders are ordered properly")
     void oldestOrdersAreFirstInList() {
         //Act
         matcher.addNewOrder(new Order(1, 40, 30, ActionType.BUY));
@@ -78,8 +80,10 @@ class MatcherTest {
         Order order1 = matcher.getBuyOrders().get(1);
 
         //Assert
-        assertEquals(1, order0.getAccount());
-        assertEquals(2, order1.getAccount());
+        assertAll(
+                () -> assertEquals(1, order0.getAccount(), "FIRST ORDER SHOULD COME FIRST"),
+                () -> assertEquals(2, order1.getAccount(), "SECOND ORDER SHOULD COME LAST")
+        );
     }
 
     @Test
@@ -131,7 +135,7 @@ class MatcherTest {
         Optional<Order> match = matcher.findMatchingOrder(new Order(3, 40, 30, ActionType.BUY));
 
         //Assert
-        assertFalse(!match.isEmpty());
+        assertTrue(match.isEmpty());
     }
 
     @Test
@@ -142,7 +146,7 @@ class MatcherTest {
         Optional<Order> match = matcher.findMatchingOrder(new Order(30, 30, 30, ActionType.BUY));
 
         //Assert
-        assertFalse(!match.isEmpty());
+        assertTrue(match.isEmpty());
     }
     @Test
     void noMatchInArraySELL() {
@@ -152,7 +156,7 @@ class MatcherTest {
         Optional<Order> match = matcher.findMatchingOrder(new Order(30, 50, 30, ActionType.SELL));
 
         //Assert
-        assertFalse(!match.isEmpty());
+        assertTrue(match.isEmpty());
     }
     @Test
     void addOrderIfNoneFound() {
