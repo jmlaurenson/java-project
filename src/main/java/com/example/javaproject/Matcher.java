@@ -44,27 +44,28 @@ public class Matcher {
      */
     public void completeTrade(Order order){
         while (order.getQuantity()>0){
-            Optional<Order> match = findMatchingOrder(order);
+            Optional<Order> optionalMatch = findMatchingOrder(order);
             //If no match is found
-            if(match.isEmpty()) {
+            if(optionalMatch.isEmpty()) {
                 addNewOrder(order);
                 return;
             }
-            this.trades.add(new Trade(match.get(), order));
+            Order match = optionalMatch.get();
+            this.trades.add(new Trade(match, order));
             //If the quantity of the matched order is less than the new orders quantity
-            if(match.get().getQuantity()-order.getQuantity()>0){
-                match.get().setQuantity(match.get().getQuantity()-order.getQuantity());
-                addNewOrder(match.get());
+            if(match.getQuantity()-order.getQuantity()>0){
+                match.setQuantity(match.getQuantity()-order.getQuantity());
+                addNewOrder(match);
             }
-            order.setQuantity(order.getQuantity()-match.get().getQuantity());
+            order.setQuantity(order.getQuantity()-match.getQuantity());
 
             //Remove the matched order
             if(order.getAction()==ActionType.BUY){
 
-                this.sellOrders.remove(match.get());
+                this.sellOrders.remove(match);
             }
             else{
-                this.buyOrders.remove(match.get());
+                this.buyOrders.remove(match);
             }
         }
     }
