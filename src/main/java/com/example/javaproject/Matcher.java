@@ -35,7 +35,7 @@ public class Matcher {
         }
         return -1;
     }
-
+    
     public Order findMatchingOrder(Order order) {
         List<Order> orderList;
         if (order.getAction() == ActionType.BUY) {
@@ -55,9 +55,14 @@ public class Matcher {
         }
     }
 
+    /**
+     * Looks for trades that match with the new order until there is no quantity left
+     * @param order the order to be added
+     */
     public void completeTrade(Order order){
         while (order.getQuantity()>0){
             Order match = findMatchingOrder(order);
+            //If no match is found
             if(match==null){
                 addNewOrder(order);
                 return;
@@ -70,6 +75,8 @@ public class Matcher {
                     addNewOrder(match);
                 }
                 order.setQuantity(order.getQuantity()-match.getQuantity());
+
+                //Remove the matched order
                 if(order.getAction()==ActionType.BUY){
 
                     this.sellOrders.remove(match);
@@ -81,6 +88,11 @@ public class Matcher {
         }
     }
 
+    /**
+     * Creates a trade
+     * @param oldOrder the order that has been matched
+     * @param newOrder the recently placed order
+     */
     public void createTrade(Order oldOrder, Order newOrder){
         int quantity = newOrder.getQuantity();
         if(oldOrder.getQuantity()< newOrder.getQuantity()){
