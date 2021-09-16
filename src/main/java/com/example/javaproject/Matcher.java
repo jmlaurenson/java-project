@@ -1,28 +1,28 @@
 package com.example.javaproject;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.*;
 
-@SpringBootApplication
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@EqualsAndHashCode
 public class Matcher {
-	private Order[] orders = {};
+
+    private List<Order> buyOrders = new ArrayList<Order>();
+    private List<Order> sellOrders = new ArrayList<Order>();
+
+    public void addNewOrder(Order order) {
+        if (order.getAction() == ActionType.BUY) {
+            this.buyOrders.add(order);
+        } else {
+            this.sellOrders.add(order);
+        }
+    }
 
 
-
-	public void addNewOrder(int account, float price, int quantity, actionType action){
-		this.orders = Arrays.copyOf(this.orders, this.orders.length+1);
-		int length = this.orders.length;
-		this.orders[length-1] = new Order(account, price, quantity, action);
-	}
-
-	public Order[] getOrders() {
-		return orders;
-	}
-
-	public void setOrders(Order[] orders) {
-		this.orders = orders;
-	}
 }
 
 

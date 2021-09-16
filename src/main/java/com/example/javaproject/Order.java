@@ -1,48 +1,31 @@
 package com.example.javaproject;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@EqualsAndHashCode
 public class Order {
     private int account;
     private float price;
     private int quantity;
-    private actionType action;
+    private ActionType action;
+    private boolean isValid;
 
-    public Order(int account, float price, int quantity, actionType action) {
+    public Order(int account, float price, int quantity, ActionType action) {
         this.account = account;
         this.price = price;
         this.quantity = quantity;
         this.action = action;
+        this.isValid = true;
+        checkIfValid();
     }
 
-
-    public int getAccount() {
-        return account;
-    }
-
-    public void setAccount(int account) {
-        this.account = account;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public actionType getAction() {
-        return action;
-    }
-
-    public void setAction(actionType action) {
-        this.action = action;
+    private void checkIfValid() {
+        if (this.account < 0 || this.price <= 0 || this.quantity < 1) {
+            this.isValid = false;
+        }
     }
 }
