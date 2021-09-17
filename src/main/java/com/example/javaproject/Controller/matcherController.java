@@ -8,28 +8,45 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-
-@Controller
-@EnableWebMvc
-@RequestMapping("/matcher")
+@RestController
 public class MatcherController {
     Matcher matcher = new Matcher();
 
-    @RequestMapping(value = "/buyOrders", method = RequestMethod.GET)
-    @ResponseBody
-    ResponseEntity<List<Order>> fetchBuyOrders() {
-        matcher.completeTrade(new Order(2,3,4, ActionType.BUY));
-        List<Order> orders =matcher.getBuyOrders();
-        return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+    @GetMapping("/")
+    public List<Order> index() {
+        return Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/sellOrders", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/buyOrders")
+    ResponseEntity<List<Order>> fetchBuyOrders() {
+        List<Order> orders =matcher.getBuyOrders();
+        return orders.isEmpty()
+                ? new ResponseEntity<List<Order>>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sellOrders")
     ResponseEntity<List<Order>> fetchSellOrders() {
-        matcher.completeTrade(new Order(2,6,4, ActionType.SELL));
         List<Order> orders =matcher.getSellOrders();
-        return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+        return orders.isEmpty()
+                ? new ResponseEntity<List<Order>>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/addOrder")
+    ResponseEntity<Order> addOrder(@RequestBody Order order) {
+        if (order == null) {
+            return new ResponseEntity<Order>(HttpStatus.NO_CONTENT);
+        } else {
+            matcher.completeTrade(order);
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
+        }
     }
 }
