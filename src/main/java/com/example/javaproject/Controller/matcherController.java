@@ -21,9 +21,11 @@ public class MatcherController {
                 .collect(Collectors.toList());
     }
 
+
     @GetMapping(value = "/buyOrders")
     ResponseEntity<List<Order>> fetchBuyOrders() {
         List<Order> orders =matcher.getBuyOrders();
+        //If order list is empty, return a 204 response
         return orders.isEmpty()
                 ? new ResponseEntity<List<Order>>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
@@ -32,6 +34,7 @@ public class MatcherController {
     @GetMapping(value = "/sellOrders")
     ResponseEntity<List<Order>> fetchSellOrders() {
         List<Order> orders =matcher.getSellOrders();
+        //If order list is empty, return a 204 response
         return orders.isEmpty()
                 ? new ResponseEntity<List<Order>>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
