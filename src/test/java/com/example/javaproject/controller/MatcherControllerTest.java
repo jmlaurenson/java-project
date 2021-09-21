@@ -1,71 +1,96 @@
 package com.example.javaproject.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.URI;
-
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.context.WebApplicationContext;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MatcherControllerTest {
-    @BeforeEach
-    void setUp() {
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class MatcherControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Before
+    public void setUp() {
+        this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
+
     @Test
     @DisplayName("Check that getting an empty sell list returns a 204 error")
     void ensureThatEmptySellListReturnsNoContent() throws Exception {
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/sellOrders")).build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(204, response.statusCode(), "RESPONSE SHOULD RETURN 204");
+        MvcResult result = mockMvc.perform(get("/sellOrders")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andReturn();
+        assertEquals("Order list is empty", result.getResponse().getContentAsString());
     }
+
     @Test
     @DisplayName("Check that getting an empty buy list returns a 204 error")
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/buyOrders")).build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(204, response.statusCode(), "RESPONSE SHOULD RETURN 204");
+        MvcResult result = mockMvc.perform(get("/buyOrders")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andReturn();
+        assertEquals("Order list is empty", result.getResponse().getContentAsString());
     }
 
     @Test
-    @DisplayName("Check that posting a new order returns a 201, created error")
+    @DisplayName("Check that posting a new order returns a 201, created")
     void ensureThatAddOrderReturnsCreated() throws Exception {
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
-                .POST(HttpRequest
-                        .BodyPublishers
-                        .ofString("{\"account\": 2,\"price\": 6.0,\"quantity\": 4,\"action\": \"SELL\"}"))
-                .uri(URI.create("http://localhost:8080/addOrder")).build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode(), "RESPONSE SHOULD RETURN 201");
+        MvcResult result = mockMvc.perform(post("/addOrder")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4,\"action\": \"SELL\"}")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andReturn();
+        assertEquals("{\"account\":2,\"price\":6.0,\"quantity\":4,\"action\":\"SELL\",\"valid\":true}", result.getResponse().getContentAsString());
     }
 
     @Test
-    @DisplayName("Check that posting an invalid order returns a 400, bad request error")
-    void ensureThatAnInvalidOrderReturnsBadRequest() throws Exception {
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
-                .POST(HttpRequest
-                        .BodyPublishers
-                        .ofString("{\"account\": 2,\"price\": \"six\",\"quantity\": 4,\"action\": \"SELL\"}"))
-                .uri(URI.create("http://localhost:8080/addOrder")).build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(400, response.statusCode(), "RESPONSE SHOULD RETURN 400");
+    @DisplayName("Check that posting an invalid order returns a 415, unsupported media type")
+    void ensureThatAnInvalidOrderThrowsError() throws Exception {
+        mockMvc.perform(post("/addOrder")
+                        .content("{\"account\": 2,\"price\": \"six\",\"quantity\": 4,\"action\": \"SELL\"}"))
+                .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    @DisplayName("Check that posting an empty order returns a 415, unsupported media type")
+    void ensureThatAnEmptyOrderThrowsError() throws Exception {
+        mockMvc.perform(post("/addOrder")
+                        .content("{}"))
+                .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
     @DisplayName("Check that getting a sell list returns 200, OK")
     void ensureThatNonEmptySellListReturns() throws Exception {
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/sellOrders")).build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode(), "RESPONSE SHOULD RETURN 200");
+        MvcResult result = mockMvc.perform(get("/sellOrders")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("[{\"account\":2,\"price\":6.0,\"quantity\":4,\"action\":\"SELL\",\"valid\":true}]", result.getResponse().getContentAsString());
     }
 
 }

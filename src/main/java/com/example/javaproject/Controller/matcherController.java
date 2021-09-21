@@ -15,38 +15,38 @@ public class MatcherController {
     Matcher matcher = new Matcher();
 
     @GetMapping("/")
-    public List<Order> index() {
-        return Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
+    public ResponseEntity index() {
+        List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+        return orders.isEmpty()
+                ? new ResponseEntity<>("Order list is empty", HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/buyOrders")
-    ResponseEntity<List<Order>> fetchBuyOrders() {
+    ResponseEntity fetchBuyOrders() {
         List<Order> orders =matcher.getBuyOrders();
         //If order list is empty, return a 204 response
         return orders.isEmpty()
-                ? new ResponseEntity<List<Order>>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                ? new ResponseEntity<>("Order list is empty", HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @GetMapping(value = "/sellOrders")
-    ResponseEntity<List<Order>> fetchSellOrders() {
+    ResponseEntity fetchSellOrders() {
         List<Order> orders =matcher.getSellOrders();
         //If order list is empty, return a 204 response
         return orders.isEmpty()
-                ? new ResponseEntity<List<Order>>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                ? new ResponseEntity<>("Order list is empty",HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity<Order> addOrder(@RequestBody Order order) {
-        if (order == null) {
-            return new ResponseEntity<Order>(HttpStatus.NO_CONTENT);
-        } else {
+    ResponseEntity addOrder(@RequestBody Order order) {
             matcher.completeTrade(order);
             return new ResponseEntity<>(order, HttpStatus.CREATED);
-        }
+
     }
 }
