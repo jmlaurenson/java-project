@@ -1,6 +1,7 @@
 package com.example.javaproject.controller;
 import com.example.javaproject.Matcher;
 import com.example.javaproject.Order;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,13 @@ import java.util.stream.Stream;
 
 @RestController
 public class MatcherController {
-    Matcher matcher = new Matcher();
+    private Matcher matcher;
+
+    //tells Spring to automatically use its own dependency features
+    @Autowired
+    public void setMatcher(Matcher matcher) {
+        this.matcher = matcher;
+    }
 
     @GetMapping("/")
     public ResponseEntity index() {
