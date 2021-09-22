@@ -1,6 +1,5 @@
 package com.example.javaproject;
 
-import org.junit.AfterClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +18,9 @@ public class BeanValidator {
 
     @BeforeEach
     public void createValidator() {
+        //Build a ValidatorFactory instance based on the default Bean Validation provider
         factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    @AfterClass
-    public void close() {
-        factory.close();
     }
 
     @Test
@@ -34,7 +29,7 @@ public class BeanValidator {
         Order order = new Order(-10, 40, 30, ActionType.BUY);
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         for (ConstraintViolation<Order> violation : violations) {
-            System.out.println(violation.getMessage());
+            System.out.println(violation.getMessage()); // Print all the violations
         }
         assertEquals(1, violations.size(), violations.iterator().next().getMessage());
     }
@@ -45,7 +40,7 @@ public class BeanValidator {
         Order order = new Order(10, 0, 30, ActionType.BUY);
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         for (ConstraintViolation<Order> violation : violations) {
-            System.out.println(violation.getMessage());
+            System.out.println(violation.getMessage());// Print all the violations
         }
         assertEquals(1, violations.size());
     }
@@ -56,7 +51,7 @@ public class BeanValidator {
         Order order = new Order(10, 40, 0, ActionType.BUY);
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         for (ConstraintViolation<Order> violation : violations) {
-            System.out.println(violation.getMessage());
+            System.out.println(violation.getMessage());// Print all the violations
         }
         assertEquals(1, violations.size());
     }
@@ -67,7 +62,7 @@ public class BeanValidator {
         Order order = new Order(10, 40.123, 30, ActionType.BUY);
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         for (ConstraintViolation<Order> violation : violations) {
-            System.out.println(violation.getMessage());
+            System.out.println(violation.getMessage()); // Print all the violations
         }
         assertEquals(1, violations.size());
     }
@@ -78,7 +73,7 @@ public class BeanValidator {
         Order order = new Order(10, 1000000000, 30, ActionType.BUY);
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         for (ConstraintViolation<Order> violation : violations) {
-            System.out.println(violation.getMessage());
+            System.out.println(violation.getMessage()); // Print all the violations
         }
         assertEquals(1, violations.size());
     }
