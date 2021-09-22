@@ -5,10 +5,12 @@ import java.util.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 @Getter
 @Setter
 @EqualsAndHashCode
+@Service
 public class Matcher {
 
     private List<Order> buyOrders = new ArrayList<Order>();

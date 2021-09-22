@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -14,7 +15,7 @@ public class Trade {
     private  Order newOrder;
     private float price;
     private int quantity;
-    private Date datetime = new Date();
+    private Instant date = Instant.now();
 
     public Trade(Order oldOrder, Order newOrder) {
         this.oldOrder = oldOrder;
