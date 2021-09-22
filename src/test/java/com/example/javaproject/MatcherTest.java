@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,9 +27,9 @@ class MatcherTest {
 
         //Assert
         assertAll(
-                () -> assertEquals(40.0, order.getPrice().doubleValue(), "ORDERS PRICE IS NOT CORRECT"),
+                () -> assertEquals(new BigDecimal("40.0"), order.getPrice(), "ORDERS PRICE IS NOT CORRECT"),
                 () -> assertEquals(1, order.getAccount(), "ORDERS ACCOUNT IS NOT CORRECT"),
-                () -> assertEquals(30, order.getQuantity().doubleValue(), "ORDERS QUANTITY IS NOT CORRECT"),
+                () -> assertEquals(new BigDecimal("30.0"), order.getQuantity(), "ORDERS QUANTITY IS NOT CORRECT"),
                 () -> assertEquals(ActionType.BUY, order.getAction(), "ORDERS ACTION IS NOT CORRECT")
         );
     }
@@ -60,8 +61,8 @@ class MatcherTest {
 
         //Assert
         assertAll(
-                () -> assertEquals(30.0, order0.getPrice().doubleValue(), "LIST HAS NOT BEEN ORDERED CORRECTLY"),
-                () -> assertEquals(40.0, order1.getPrice().doubleValue(), "LIST HAS NOT BEEN ORDERED CORRECTLY")
+                () -> assertEquals(new BigDecimal("30.0"), order0.getPrice(), "LIST HAS NOT BEEN ORDERED CORRECTLY"),
+                () -> assertEquals(new BigDecimal("40.0"), order1.getPrice(), "LIST HAS NOT BEEN ORDERED CORRECTLY")
         );
     }
 
@@ -229,7 +230,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE AND A HALF MATCHES SHOULD HAVE BEEN MADE"),
-                () -> assertEquals(20, newList.get(0).getQuantity().doubleValue(), "QUANTITY REMAINING SHOULD BE 20")
+                () -> assertEquals(new BigDecimal("20"), newList.get(0).getQuantity(), "QUANTITY REMAINING SHOULD BE 20")
         );
     }
 
@@ -244,7 +245,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE AND A HALF MATCHES SHOULD HAVE BEEN MADE"),
-                () ->assertEquals(20, newList.get(0).getQuantity().doubleValue(), "QUANTITY REMAINING SHOULD BE 20")
+                () ->assertEquals(new BigDecimal("20"), newList.get(0).getQuantity(), "QUANTITY REMAINING SHOULD BE 20")
         );
     }
 
@@ -262,7 +263,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE ORDER SHOULD BE REMAINING AFTER A MATCH"),
-                () -> assertEquals(5, newList.get(0).getQuantity().doubleValue(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
+                () -> assertEquals(new BigDecimal("5"), newList.get(0).getQuantity(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
                 () -> assertEquals(4, newList.get(0).getAccount(), "REMAINING ORDER SHOULD BE ACCOUNT 4")
         );
     }
@@ -281,7 +282,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE ORDER SHOULD BE REMAINING AFTER A MATCH"),
-                () -> assertEquals(5, newList.get(0).getQuantity().doubleValue(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
+                () -> assertEquals(new BigDecimal("5"), newList.get(0).getQuantity(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
                 () -> assertEquals(4, newList.get(0).getAccount(), "REMAINING ORDER SHOULD BE ACCOUNT 4")
         );
     }

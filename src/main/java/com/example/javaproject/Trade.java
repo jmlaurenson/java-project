@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.time.Instant;
 import java.util.Date;
@@ -12,8 +13,8 @@ import java.util.Date;
 @Setter
 @EqualsAndHashCode
 public class Trade {
-    private Order oldOrder;
-    private  Order newOrder;
+    @Valid private Order oldOrder;
+    @Valid private  Order newOrder;
 
     @DecimalMin("0.01")
     @Digits(integer=9, fraction=2)

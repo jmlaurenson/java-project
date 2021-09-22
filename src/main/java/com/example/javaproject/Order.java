@@ -31,12 +31,12 @@ public class Order implements Comparable<Order> {
 
     public Order(int account, double price, double quantity, ActionType action) {
         this.account = account;
-        this.price = new BigDecimal(price+"");
-        this.quantity = new BigDecimal(quantity+"");
+        this.price =  BigDecimal.valueOf(price);
+        this.quantity =  BigDecimal.valueOf(quantity);
         this.action = action;
     }
 
     public int compareTo(Order order) {
-        return Double.compare(this.getPrice().doubleValue(), order.getPrice().doubleValue());
+        return this.getPrice().compareTo(order.getPrice());
     }
 }

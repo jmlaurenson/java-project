@@ -29,7 +29,7 @@ public class Matcher {
     }
 
     private boolean compareOrders(Order order, Order a){
-        return a.getAction() == ActionType.BUY ? a.getPrice().doubleValue() >= order.getPrice().doubleValue() : a.getPrice().doubleValue() <= order.getPrice().doubleValue();
+        return a.getAction() == ActionType.BUY ? order.getPrice().compareTo(a.getPrice())<1   : order.getPrice().compareTo(a.getPrice())>-1 ;
     }
 
     public Optional<Order> findMatchingOrder(Order order) {
@@ -46,7 +46,7 @@ public class Matcher {
      * @param order the order to be added
      */
     public void completeTrade(Order order){
-        while (order.getQuantity().doubleValue()>0){
+        while (order.getQuantity().compareTo(new BigDecimal("0"))>-1){
             Optional<Order> optionalMatch = findMatchingOrder(order);
             //If no match is found
             if(optionalMatch.isEmpty()) {

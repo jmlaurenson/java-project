@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class MatcherController {
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity addOrder(@RequestBody Order order) {
+    ResponseEntity addOrder(@RequestBody @Valid Order order) {
         matcher.completeTrade(order);
         return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
