@@ -4,9 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.Instant;
 import java.util.Date;
 
@@ -25,6 +23,8 @@ public class Trade {
     @DecimalMin("1")
     @NotNull
     private double quantity;
+
+    @PastOrPresent
     private Instant date = Instant.now();
 
     public Trade(Order oldOrder, Order newOrder) {

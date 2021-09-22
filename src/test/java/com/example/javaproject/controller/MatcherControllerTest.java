@@ -65,7 +65,7 @@ public class MatcherControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andReturn();
-        assertEquals("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\",\"valid\":true}", result.getResponse().getContentAsString());
+        assertEquals("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}", result.getResponse().getContentAsString());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class MatcherControllerTest {
         MvcResult result = mockMvc.perform(get("/sellOrders")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
-        assertEquals("[{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\",\"valid\":true}]", result.getResponse().getContentAsString());
+        assertEquals("[{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}]", result.getResponse().getContentAsString());
     }
 
 }

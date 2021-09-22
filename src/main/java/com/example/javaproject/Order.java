@@ -28,14 +28,12 @@ public class Order implements Comparable<Order> {
 
     @NotNull
     private ActionType action;
-    private boolean isValid;
 
     public Order(int account, double price, double quantity, ActionType action) {
         this.account = account;
         this.price = new BigDecimal(price+"");
         this.quantity = new BigDecimal(quantity+"");
         this.action = action;
-        this.isValid = true;
     }
 
     public int compareTo(Order order) {
