@@ -52,8 +52,7 @@ public class MatcherController {
 
     @PostMapping(value = "/addOrder")
     ResponseEntity addOrder(@RequestBody Order order) {
-            matcher.completeTrade(order);
-            return new ResponseEntity<>(order, HttpStatus.CREATED);
-
+        matcher.completeTrade(order);
+        return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
 }

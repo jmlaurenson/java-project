@@ -38,59 +38,60 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that getting an empty sell list returns a 204 error")
     void ensureThatEmptySellListReturnsNoContent() throws Exception {
-        MvcResult result = mockMvc.perform(get("/sellOrders")
+        mockMvc.perform(get("/sellOrders")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
-                .andReturn();
-        assertEquals("Order list is empty", result.getResponse().getContentAsString());
+                .andExpect(content().string("Order list is empty"));
     }
 
     @Test
     @DisplayName("Check that getting an empty buy list returns a 204 error")
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
-        MvcResult result = mockMvc.perform(get("/buyOrders")
+        mockMvc.perform(get("/buyOrders")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
-                .andReturn();
-        assertEquals("Order list is empty", result.getResponse().getContentAsString());
+                .andExpect(content().string("Order list is empty"));
     }
 
     @Test
     @DisplayName("Check that posting a new order returns a 201, created")
     void ensureThatAddOrderReturnsCreated() throws Exception {
-        MvcResult result = mockMvc.perform(post("/addOrder")
+        mockMvc.perform(post("/addOrder")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andReturn();
-        assertEquals("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}", result.getResponse().getContentAsString());
+                .andExpect(content().json("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}"));
     }
 
     @Test
-    @DisplayName("Check that posting an invalid order returns a 415, unsupported media type")
+    @DisplayName("Check that posting an invalid order returns a 400, invalid request")
     void ensureThatAnInvalidOrderThrowsError() throws Exception {
         mockMvc.perform(post("/addOrder")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"account\": 2,\"price\": \"six\",\"quantity\": 4,\"action\": \"SELL\"}"))
-                .andExpect(status().isUnsupportedMediaType());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("Check that posting an empty order returns a 415, unsupported media type")
+    @DisplayName("Check that posting an empty order returns a 400, invalid request")
     void ensureThatAnEmptyOrderThrowsError() throws Exception {
         mockMvc.perform(post("/addOrder")
-                        .content("{}"))
-                .andExpect(status().isUnsupportedMediaType());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"account\":,\"price\":,\"quantity\":,\"action\":}")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Check that getting a sell list returns 200, OK")
     void ensureThatNonEmptySellListReturns() throws Exception {
-        MvcResult result = mockMvc.perform(get("/sellOrders")
+        mockMvc.perform(get("/sellOrders")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
-        assertEquals("[{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}]", result.getResponse().getContentAsString());
-    }
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}]"));
+        }
 
 }
