@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -40,17 +41,17 @@ public class MatcherControllerTest {
     void ensureThatEmptySellListReturnsNoContent() throws Exception {
         mockMvc.perform(get("/sellOrders")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string("Order list is empty"));
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
     }
 
     @Test
-    @DisplayName("Check that getting an empty buy list returns a 204 error")
+    @DisplayName("Check that getting an empty buy list returns a 200 error")
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
         mockMvc.perform(get("/buyOrders")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string("Order list is empty"));
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
     }
 
     @Test
@@ -58,21 +59,66 @@ public class MatcherControllerTest {
     void ensureThatAddOrderReturnsCreated() throws Exception {
         mockMvc.perform(post("/addOrder")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4,\"action\": \"SELL\"}")
+                        .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(content().json("{\"account\":2,\"price\":6.0,\"quantity\":4,\"action\":\"SELL\",\"valid\":true}"));
+                .andExpect(content().json("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}"));
     }
 
     @Test
-    @DisplayName("Check that posting an invalid order returns a 400, invalid request")
+    @DisplayName("Check that posting an invalid order with a string returns a relevant response")
     void ensureThatAnInvalidOrderThrowsError() throws Exception {
-        mockMvc.perform(post("/addOrder")
+        MvcResult result = mockMvc.perform(post("/addOrder")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"account\": 2,\"price\": \"six\",\"quantity\": 4,\"action\": \"SELL\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("Cannot deserialize value of type `double` from String \"six\": not a valid `double` value"));
+
     }
+
+    @Test
+    @DisplayName("Check that posting an invalid order with an invalid number returns a relevant response")
+    void ensureThatAnInvalidOrderThrowsError2() throws Exception {
+        MvcResult result = mockMvc.perform(post("/addOrder")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"account\": 2,\"price\": 0,\"quantity\": 4,\"action\": \"SELL\"}"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("must be greater than or equal to 0.01"));
+    }
+
+    @Test
+    @DisplayName("Check that posting an invalid order with multiple invalid fields returns a relevant response")
+    void ensureThatAnInvalidOrderThrowsMultipleErrors() throws Exception {
+        MvcResult result = mockMvc.perform(post("/addOrder")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"account\": 2,\"price\": 0.999,\"quantity\": 0,\"action\": \"SELL\"}"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertAll(
+                () -> assertTrue(result.getResponse().getContentAsString().contains("numeric value out of bounds")),
+                () -> assertTrue(result.getResponse().getContentAsString().contains("must be greater than or equal to 0.01"))
+        );
+    }
+
+    @Test
+    @DisplayName("Check that posting an invalid order with all invalid fields returns a relevant response")
+    void ensureThatAnInvalidOrderThrowsFourErrors() throws Exception {
+        MvcResult result = mockMvc.perform(post("/addOrder")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"account\": -1,\"price\": 0.999,\"quantity\": 0,\"action\": null}"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertAll(
+                () -> assertTrue(result.getResponse().getContentAsString().contains("numeric value out of bounds")),
+                () -> assertTrue(result.getResponse().getContentAsString().contains("must be greater than or equal to 0.01")),
+                () -> assertTrue(result.getResponse().getContentAsString().contains("must be greater than or equal to 0")),
+                () -> assertTrue(result.getResponse().getContentAsString().contains("must not be null"))
+        );
+    }
+
 
     @Test
     @DisplayName("Check that posting an empty order returns a 400, invalid request")
@@ -91,7 +137,7 @@ public class MatcherControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[{\"account\":2,\"price\":6.0,\"quantity\":4,\"action\":\"SELL\",\"valid\":true}]"));
+                .andExpect(content().json("[{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}]"));
         }
 
 }

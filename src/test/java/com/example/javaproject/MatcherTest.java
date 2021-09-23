@@ -3,13 +3,10 @@ package com.example.javaproject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,9 +27,9 @@ class MatcherTest {
 
         //Assert
         assertAll(
-                () -> assertEquals(40, order.getPrice(), "ORDERS PRICE IS NOT CORRECT"),
+                () -> assertEquals(new BigDecimal("40.0"), order.getPrice(), "ORDERS PRICE IS NOT CORRECT"),
                 () -> assertEquals(1, order.getAccount(), "ORDERS ACCOUNT IS NOT CORRECT"),
-                () -> assertEquals(30, order.getQuantity(), "ORDERS QUANTITY IS NOT CORRECT"),
+                () -> assertEquals(new BigDecimal("30.0"), order.getQuantity(), "ORDERS QUANTITY IS NOT CORRECT"),
                 () -> assertEquals(ActionType.BUY, order.getAction(), "ORDERS ACTION IS NOT CORRECT")
         );
     }
@@ -53,17 +50,6 @@ class MatcherTest {
         );
     }
 
-    static Stream<Order> OrderProvider() {
-        return Stream.of(new Order(-10, 40, 30, ActionType.BUY), new Order(1, 0, 30, ActionType.BUY), new Order(1, 40, 0, ActionType.BUY)
-        );}
-
-    @ParameterizedTest
-    @MethodSource("OrderProvider")
-    @DisplayName("Check invalid orders are handled")
-    void invalidOrdersAreCaught(Order order) {
-        assertFalse(order.isValid(), "INVALID ORDER HAS NOT BEEN HANDLED");
-    }
-
     @Test
     @DisplayName("Check orders are added in the correct order")
     void matcherAddsBuyOrdersToCorrectPlace() {
@@ -75,8 +61,8 @@ class MatcherTest {
 
         //Assert
         assertAll(
-                () -> assertEquals(30, order0.getPrice(), "LIST HAS NOT BEEN ORDERED CORRECTLY"),
-                () -> assertEquals(40, order1.getPrice(), "LIST HAS NOT BEEN ORDERED CORRECTLY")
+                () -> assertEquals(new BigDecimal("30.0"), order0.getPrice(), "LIST HAS NOT BEEN ORDERED CORRECTLY"),
+                () -> assertEquals(new BigDecimal("40.0"), order1.getPrice(), "LIST HAS NOT BEEN ORDERED CORRECTLY")
         );
     }
 
@@ -244,7 +230,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE AND A HALF MATCHES SHOULD HAVE BEEN MADE"),
-                () -> assertEquals(20, newList.get(0).getQuantity(), "QUANTITY REMAINING SHOULD BE 20")
+                () -> assertEquals(new BigDecimal("20"), newList.get(0).getQuantity(), "QUANTITY REMAINING SHOULD BE 20")
         );
     }
 
@@ -259,7 +245,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE AND A HALF MATCHES SHOULD HAVE BEEN MADE"),
-                () ->assertEquals(20, newList.get(0).getQuantity(), "QUANTITY REMAINING SHOULD BE 20")
+                () ->assertEquals(new BigDecimal("20"), newList.get(0).getQuantity(), "QUANTITY REMAINING SHOULD BE 20")
         );
     }
 
@@ -277,7 +263,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE ORDER SHOULD BE REMAINING AFTER A MATCH"),
-                () -> assertEquals(5, newList.get(0).getQuantity(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
+                () -> assertEquals(new BigDecimal("5"), newList.get(0).getQuantity(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
                 () -> assertEquals(4, newList.get(0).getAccount(), "REMAINING ORDER SHOULD BE ACCOUNT 4")
         );
     }
@@ -296,7 +282,7 @@ class MatcherTest {
         //Assert
         assertAll(
                 () -> assertEquals(1, newList.size(), "ONE ORDER SHOULD BE REMAINING AFTER A MATCH"),
-                () -> assertEquals(5, newList.get(0).getQuantity(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
+                () -> assertEquals(new BigDecimal("5"), newList.get(0).getQuantity(), "REMAINING ORDER SHOULD HAVE 5 QUANTITY AFTER A MATCH"),
                 () -> assertEquals(4, newList.get(0).getAccount(), "REMAINING ORDER SHOULD BE ACCOUNT 4")
         );
     }

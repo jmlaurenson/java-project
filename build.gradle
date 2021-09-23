@@ -17,11 +17,15 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.20'
 	implementation 'junit:junit:4.13.1'
 	implementation 'org.webjars.npm:bodybuilder:1.15.1'
+	implementation 'org.jetbrains:annotations:20.1.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'junit:junit:4.13'
 
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 	testCompileOnly 'org.projectlombok:lombok:1.18.20'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-validation:2.3.0.RELEASE'
 }
 
 test {

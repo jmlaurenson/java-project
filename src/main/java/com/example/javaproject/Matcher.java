@@ -1,5 +1,6 @@
 package com.example.javaproject;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import lombok.EqualsAndHashCode;
@@ -28,7 +29,7 @@ public class Matcher {
     }
 
     private boolean compareOrders(Order order, Order a){
-        return a.getAction() == ActionType.BUY ? a.getPrice() >= order.getPrice() : a.getPrice() <= order.getPrice();
+        return a.getAction() == ActionType.BUY ? order.getPrice().compareTo(a.getPrice())<1   : order.getPrice().compareTo(a.getPrice())>-1 ;
     }
 
     public Optional<Order> findMatchingOrder(Order order) {
@@ -45,7 +46,7 @@ public class Matcher {
      * @param order the order to be added
      */
     public void completeTrade(Order order){
-        while (order.getQuantity()>0){
+        while (order.getQuantity().compareTo(BigDecimal.ZERO)>-1){
             Optional<Order> optionalMatch = findMatchingOrder(order);
             //If no match is found
             if(optionalMatch.isEmpty()) {
@@ -54,12 +55,14 @@ public class Matcher {
             }
             Order match = optionalMatch.get();
             this.trades.add(new Trade(match, order));
+            double matchQuantity = match.getQuantity().doubleValue();
+            double orderQuantity = order.getQuantity().doubleValue();
             //If the quantity of the matched order is less than the new orders quantity
-            if(match.getQuantity()-order.getQuantity()>0){
-                match.setQuantity(match.getQuantity()-order.getQuantity());
+            if(matchQuantity-orderQuantity>0){
+                match.setQuantity(new BigDecimal(matchQuantity-orderQuantity));
                 addNewOrder(match);
             }
-            order.setQuantity(order.getQuantity()-match.getQuantity());
+            order.setQuantity(new BigDecimal(orderQuantity-matchQuantity));
 
             //Remove the matched order
             if(order.getAction()==ActionType.BUY){
