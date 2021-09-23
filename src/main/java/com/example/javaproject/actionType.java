@@ -1,5 +1,5 @@
 package com.example.javaproject;
 
-public enum actionType {
+public enum ActionType {
     BUY, SELL
 }
