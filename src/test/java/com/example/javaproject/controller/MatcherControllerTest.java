@@ -1,30 +1,19 @@
 package com.example.javaproject.controller;
 
-import com.example.javaproject.ActionType;
-import com.example.javaproject.Order;
 import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.validation.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-//@ContextConfiguration(classes = { ValidationAutoConfiguration.class})
 public class MatcherControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -53,17 +41,17 @@ public class MatcherControllerTest {
     void ensureThatEmptySellListReturnsNoContent() throws Exception {
         mockMvc.perform(get("/sellOrders")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string("Order list is empty"));
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
     }
 
     @Test
-    @DisplayName("Check that getting an empty buy list returns a 204 error")
+    @DisplayName("Check that getting an empty buy list returns a 200 error")
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
         mockMvc.perform(get("/buyOrders")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string("Order list is empty"));
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
     }
 
     @Test
@@ -129,7 +117,6 @@ public class MatcherControllerTest {
                 () -> assertTrue(result.getResponse().getContentAsString().contains("must be greater than or equal to 0")),
                 () -> assertTrue(result.getResponse().getContentAsString().contains("must not be null"))
         );
-
     }
 
 

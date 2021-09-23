@@ -1,15 +1,11 @@
-package com.example.javaproject.controller;
+package com.example.javaproject.Controller;
 import com.example.javaproject.Matcher;
 import com.example.javaproject.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,47 +28,30 @@ public class MatcherController {
     }
 
     @GetMapping("/")
-    public ResponseEntity index() {
+    public ResponseEntity<List<Order>> index() {
         List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        return orders.isEmpty()
-                ? new ResponseEntity<>("Order list is empty", HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(orders, HttpStatus.OK);
+        return ResponseEntity.ok(orders);
     }
 
 
     @GetMapping(value = "/buyOrders")
-    ResponseEntity fetchBuyOrders() {
+    ResponseEntity<List<Order>> fetchBuyOrders() {
         List<Order> orders =matcher.getBuyOrders();
-        //If order list is empty, return a 204 response
-        return orders.isEmpty()
-                ? new ResponseEntity<>("Order list is empty", HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(orders, HttpStatus.OK);
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping(value = "/sellOrders")
-    ResponseEntity fetchSellOrders() {
+    ResponseEntity<List<Order>> fetchSellOrders() {
         List<Order> orders =matcher.getSellOrders();
-        //If order list is empty, return a 204 response
-        return orders.isEmpty()
-                ? new ResponseEntity<>("Order list is empty",HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(orders, HttpStatus.OK);
+        return ResponseEntity.ok(orders);
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity addOrder(@Valid @RequestBody Order order, Errors errors, BindingResult result) {
-        if (result.hasErrors()) {
-            System.out.println("Errors present");
-            for (ObjectError objectError : errors.getAllErrors()) {
-                System.out.println("errors : " + objectError.getDefaultMessage());
-
-            }
-            return new ResponseEntity(errors.getAllErrors().toString(), HttpStatus.BAD_REQUEST);
-        }
+    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order) {
         matcher.completeTrade(order);
-        return new ResponseEntity<>(order, HttpStatus.CREATED);
-
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
