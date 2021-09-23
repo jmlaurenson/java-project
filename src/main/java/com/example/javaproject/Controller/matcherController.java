@@ -4,11 +4,20 @@ import com.example.javaproject.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,8 +61,36 @@ public class MatcherController {
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity addOrder(@RequestBody @Valid Order order) {
+    ResponseEntity addOrder(@Valid @RequestBody Order order, Errors errors, BindingResult result) {
+        if (result.hasErrors()) {
+            System.out.println("Errors present");
+            for (ObjectError objectError : errors.getAllErrors()) {
+                System.out.println("errors : " + objectError.getDefaultMessage());
+
+            }
+            return new ResponseEntity(errors.getAllErrors().toString(), HttpStatus.BAD_REQUEST);
+        }
         matcher.completeTrade(order);
         return new ResponseEntity<>(order, HttpStatus.CREATED);
+
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageConversionException.class)
+    String handleException(HttpMessageConversionException e){
+        return "Error reading order values: "+e.getLocalizedMessage();
     }
 }

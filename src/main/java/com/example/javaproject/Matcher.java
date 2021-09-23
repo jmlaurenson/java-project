@@ -46,7 +46,7 @@ public class Matcher {
      * @param order the order to be added
      */
     public void completeTrade(Order order){
-        while (order.getQuantity().compareTo(new BigDecimal("0"))>-1){
+        while (order.getQuantity().compareTo(BigDecimal.ZERO)>-1){
             Optional<Order> optionalMatch = findMatchingOrder(order);
             //If no match is found
             if(optionalMatch.isEmpty()) {
