@@ -65,7 +65,7 @@ public class Matcher {
             order.setQuantity(new BigDecimal(orderQuantity-matchQuantity));
 
             //Remove the matched order
-            if(order.getAction()==ActionType.BUY){
+            if(order.getAction()== ActionType.BUY){
 
                 this.sellOrders.remove(match);
             }
