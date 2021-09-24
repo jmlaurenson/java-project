@@ -8,8 +8,9 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 public class User {
-    public String username;
-    public String password;
+    private String username;
+    private String password;
+    private String token;
 
     public User(String username, String password){
         this.username = username;
