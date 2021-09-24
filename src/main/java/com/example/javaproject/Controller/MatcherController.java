@@ -1,4 +1,6 @@
 package com.example.javaproject.Controller;
+import com.example.javaproject.Authentication.AccountManager;
+import com.example.javaproject.Authentication.UnauthorisedException;
 import com.example.javaproject.Matcher;
 import com.example.javaproject.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -20,6 +23,13 @@ import java.util.stream.Stream;
 @RestController
 public class MatcherController {
     private Matcher matcher;
+    private AccountManager accountManager;
+
+    //tells Spring to automatically use its own dependency features
+    @Autowired
+    public void setAccountManager(AccountManager accountManager) {
+        this.accountManager = accountManager;
+    }
 
     //tells Spring to automatically use its own dependency features
     @Autowired
@@ -49,9 +59,21 @@ public class MatcherController {
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order) {
-        matcher.completeTrade(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order, @RequestHeader String token) {
+        try {
+            if (!authenticateAccount(token)) {
+                throw new UnauthorisedException();
+            }
+            matcher.completeTrade(order);
+            return ResponseEntity.status(HttpStatus.CREATED).body(order);
+        } catch (UnauthorisedException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Invalid token");
+        }
+    }
+
+    public boolean authenticateAccount(String token) {
+        return accountManager.authenticateUser(token);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
