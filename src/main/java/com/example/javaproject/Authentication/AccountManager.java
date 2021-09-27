@@ -47,9 +47,7 @@ public class AccountManager {
     //Check the map for a user ID and check if its token matches the token passed in
     public boolean authenticateUserByID(String token, int userID){
         if(accounts.get(userID)!=null){
-            if(String.valueOf(Objects.hash(accounts.get(userID).getPassword(), accounts.get(userID).getUserID())).equals(token)){
-                return true;
-            }
+            return String.valueOf(Objects.hash(accounts.get(userID).getPassword(), accounts.get(userID).getUserID())).equals(token);
         }
         return false;
     }
