@@ -36,23 +36,21 @@ public class AccountManager {
 
     //Loop through every user for the current token and return true if authenticated
     public boolean authenticateUser(String token){
-        accounts.forEach((k, v) -> {
-            if(String.valueOf(Objects.hash(v.getPassword(), v.getUserID())).equals(token)){
-                return;
-            }
-        });
-        return false;
+        return accounts.entrySet()
+                .stream()
+                .anyMatch(v -> String.valueOf(Objects.hash(v.getValue()
+                        .getPassword(), v.getValue()
+                        .getUserID()))
+                        .equals(token));
     }
 
     //Check the map for a user ID and check if its token matches the token passed in
     public boolean authenticateUserByID(String token, int userID){
         if(accounts.get(userID)!=null){
             if(String.valueOf(Objects.hash(accounts.get(userID).getPassword(), accounts.get(userID).getUserID())).equals(token)){
-                System.out.println("TRUE");
                 return true;
             }
         }
-        System.out.println("FALSE");
         return false;
     }
 }
