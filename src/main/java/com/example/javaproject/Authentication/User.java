@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 public class User {
-    private String username;
+    private int userID;
     private String password;
     private String token;
 
-    public User(String username, String password){
-        this.username = username;
+    public User(int userID, String password){
+        this.userID = userID;
         this.password = password;
     }
 }

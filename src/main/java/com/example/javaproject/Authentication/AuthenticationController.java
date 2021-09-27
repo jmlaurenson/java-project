@@ -23,11 +23,4 @@ public class AuthenticationController {
     ResponseEntity<User> login(@RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).header("token", accountManager.setToken(user)).body(user);
     }
-
-    @GetMapping("/authenticate/{token}")
-    ResponseEntity<String> authenticateUser(@PathVariable String token) {
-        //accountManager.addAccount(user);
-        //accountManager.printMap();
-        return accountManager.authenticateUser(token) ? ResponseEntity.status(HttpStatus.FOUND).body("User authenticated") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not authenticated");
-    }
 }
