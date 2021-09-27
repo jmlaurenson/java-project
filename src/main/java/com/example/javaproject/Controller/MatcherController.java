@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,62 +36,47 @@ public class MatcherController {
 
     @GetMapping("/")
     public ResponseEntity<List<Order>> index(@RequestHeader String token) {
-        try {
-            if (!accountManager.authenticateUser(token)) {
-                throw new UnauthorisedException();
-            }
-            List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(orders);
-        } catch (UnauthorisedException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Invalid token");
-        }
+        authenticateUser(token, Optional.empty());
+        List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(orders);
     }
 
 
     @GetMapping(value = "/buyOrders")
     ResponseEntity<List<Order>> fetchBuyOrders(@RequestHeader String token) {
-        try {
-            if (!accountManager.authenticateUser(token)) {
-                throw new UnauthorisedException();
-            }
-            List<Order> orders =matcher.getBuyOrders();
-            return ResponseEntity.ok(orders);
-        } catch (UnauthorisedException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Invalid token");
-        }
-
+        authenticateUser(token, Optional.empty());
+        List<Order> orders =matcher.getBuyOrders();
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping(value = "/sellOrders")
     ResponseEntity<List<Order>> fetchSellOrders(@RequestHeader String token) {
-        try {
-            if (!accountManager.authenticateUser(token)) {
-                throw new UnauthorisedException();
-            }
-            List<Order> orders =matcher.getSellOrders();
-            return ResponseEntity.ok(orders);
-        } catch (UnauthorisedException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Invalid token");
-        }
-
+        authenticateUser(token, Optional.empty());
+        List<Order> orders =matcher.getSellOrders();
+        return ResponseEntity.ok(orders);
     }
 
     @PostMapping(value = "/addOrder")
     ResponseEntity<Order> addOrder(@Valid @RequestBody Order order, @RequestHeader String token) {
-        try {
-            if (!accountManager.authenticateUserByID(token, order.getAccount())) {
-                throw new UnauthorisedException();
+        authenticateUser(token, Optional.of(order.getAccount()));
+        matcher.completeTrade(order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+    }
+
+    public void authenticateUser(String token, Optional<Integer> account){
+        if (account.isEmpty()){
+            if (!accountManager.authenticateUser(token)){
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "Invalid token");
             }
-            matcher.completeTrade(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body(order);
-        } catch (UnauthorisedException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Invalid token");
+        }
+        else{
+            if (!accountManager.authenticateUserByID(token, account.get())){
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "Invalid token");
+            }
         }
     }
 

@@ -11,11 +11,11 @@ public class AuthenticationController {
 
     //tells Spring to automatically use its own dependency features
     @Autowired
-    public void setAccountManager(AccountManager accountManager) {
+    AuthenticationController(AccountManager accountManager){
         this.accountManager = accountManager;
     }
 
-    @PostMapping(value = "/logIn")
+    @PostMapping(value = "/login")
     ResponseEntity<User> login(@RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).header("token", accountManager.setToken(user)).body(user);
     }
