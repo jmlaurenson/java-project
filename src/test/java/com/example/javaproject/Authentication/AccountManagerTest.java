@@ -62,7 +62,7 @@ class AccountManagerTest {
         //Act
         boolean result = accountManager.authenticateUser(accountManager.accounts.get(1).getToken());
         //Assert
-        assertTrue(result);
+        assertTrue(result, "USER NOT AUTHENTICATED");
     }
 
     @Test
@@ -73,7 +73,7 @@ class AccountManagerTest {
         //Act
         boolean result = accountManager.authenticateUser("123");
         //Assert
-        assertFalse(result);
+        assertFalse(result, "INCORRECT USER AUTHENTICATED");
     }
 
     @Test
@@ -84,7 +84,7 @@ class AccountManagerTest {
         //Act
         boolean result = accountManager.authenticateUserByID(accountManager.accounts.get(1).getToken(), 1);
         //Assert
-        assertTrue(result);
+        assertTrue(result, "USER NOT FOUND");
     }
 
     @Test
@@ -95,7 +95,7 @@ class AccountManagerTest {
         //Act
         boolean result = accountManager.authenticateUserByID("123", 1);
         //Assert
-        assertFalse(result);
+        assertFalse(result, "INCORRECT USER AUTHENTICATED");
     }
 
     @Test
@@ -106,10 +106,6 @@ class AccountManagerTest {
         //Act
         boolean result = accountManager.authenticateUserByID(accountManager.accounts.get(1).getToken(), 2);
         //Assert
-        assertFalse(result);
+        assertFalse(result, "INCORRECT USER AUTHENTICATED");
     }
-
-
-
-
 }
