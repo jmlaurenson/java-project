@@ -39,7 +39,12 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that getting an empty sell list returns a 204 error")
     void ensureThatEmptySellListReturnsNoContent() throws Exception {
+        MvcResult result = mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userID\":6,\"password\":\"password\"}")
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
         mockMvc.perform(get("/sellOrders")
+                        .header("token", result.getResponse().getHeaderValues("token"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
@@ -48,7 +53,12 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that getting an empty buy list returns a 200 error")
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
+        MvcResult result = mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userID\":6,\"password\":\"password\"}")
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
         mockMvc.perform(get("/buyOrders")
+                        .header("token", result.getResponse().getHeaderValues("token"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
@@ -57,7 +67,12 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that posting a new order returns a 201, created")
     void ensureThatAddOrderReturnsCreated() throws Exception {
+        MvcResult result = mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userID\":2,\"password\":\"password\"}")
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
         mockMvc.perform(post("/addOrder")
+                        .header("token", result.getResponse().getHeaderValues("token"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
                         .accept(MediaType.APPLICATION_JSON))
@@ -133,7 +148,12 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that getting a sell list returns 200, OK")
     void ensureThatNonEmptySellListReturns() throws Exception {
+        MvcResult result = mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userID\":2,\"password\":\"password\"}")
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
         mockMvc.perform(get("/sellOrders")
+                        .header("token", result.getResponse().getHeaderValues("token"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

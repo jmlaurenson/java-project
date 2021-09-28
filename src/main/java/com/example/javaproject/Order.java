@@ -23,6 +23,7 @@ public class Order implements Comparable<Order> {
     private BigDecimal price;
 
     @DecimalMin("0.01")
+    @Digits(integer=9, fraction=2)
     @NotNull
     private BigDecimal quantity;
 
