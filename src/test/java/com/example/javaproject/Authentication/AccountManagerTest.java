@@ -1,13 +1,9 @@
 package com.example.javaproject.Authentication;
 
-import com.example.javaproject.ActionType;
-import com.example.javaproject.Matcher;
-import com.example.javaproject.Order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +21,12 @@ class AccountManagerTest {
     void addNewAccountAndReceiveToken() {
         //Arrange
         accountManager.setToken(new User(1, "Password"));
+
+        //Act
         User result = accountManager.accounts.get(1);
         String predictedToken = String.valueOf(Objects.hash(Objects.hash("Password"), 1));
 
-        //Act
+        //Assert
         assertAll(
                 () -> assertEquals(Objects.hash("Password"), result.getPassword(), "PASSWORD IS INCORRECT"),
                 () -> assertEquals(predictedToken, result.getToken(), "TOKEN IS INCORRECT")
@@ -38,9 +36,11 @@ class AccountManagerTest {
     @Test
     @DisplayName("Check that two users can be added to the same map")
     void twoUsersAdded() {
-        //Act
+        //Arrange
         accountManager.setToken(new User(1, "Password"));
         accountManager.setToken(new User(2, "Password2"));
+
+        //Act
         User result1 = accountManager.accounts.get(1);
         User result2 = accountManager.accounts.get(2);
         String predictedToken1 = String.valueOf(Objects.hash(Objects.hash("Password"), 1));

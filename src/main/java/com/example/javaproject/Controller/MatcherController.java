@@ -35,7 +35,7 @@ public class MatcherController {
 
     @GetMapping("/")
     public ResponseEntity<List<Order>> index(@RequestHeader String token) {
-        authenticateUser(token, Optional.empty());
+        authenticateUser(token);
         List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -45,38 +45,38 @@ public class MatcherController {
 
     @GetMapping(value = "/buyOrders")
     ResponseEntity<List<Order>> fetchBuyOrders(@RequestHeader String token) {
-        authenticateUser(token, Optional.empty());
+        authenticateUser(token);
         List<Order> orders =matcher.getBuyOrders();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping(value = "/sellOrders")
     ResponseEntity<List<Order>> fetchSellOrders(@RequestHeader String token) {
-        authenticateUser(token, Optional.empty());
+        authenticateUser(token);
         List<Order> orders =matcher.getSellOrders();
         return ResponseEntity.ok(orders);
     }
 
     @PostMapping(value = "/addOrder")
     ResponseEntity<Order> addOrder(@Valid @RequestBody Order order, @RequestHeader String token) {
-        authenticateUser(token, Optional.of(order.getAccount()));
+        authenticateUser(token, order.getAccount());
         matcher.completeTrade(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    public void authenticateUser(String token, Optional<Integer> account){
-        if (account.isEmpty()){
-            if (!accountManager.authenticateUser(token)){
-                throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED, "Invalid token");
-            }
+    public void authenticateUser(String token){
+        if (!accountManager.authenticateUser(token)){
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Invalid token");
         }
-        else{
-            if (!accountManager.authenticateUserByID(token, account.get())){
-                throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED, "Invalid token");
-            }
+    }
+
+    public void authenticateUser(String token, Integer account){
+        if (!accountManager.authenticateUserByID(token, account)){
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Invalid token");
         }
+
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
