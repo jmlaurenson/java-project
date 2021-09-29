@@ -8,19 +8,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AuthenticationController {
     private AccountManager accountManager;
-    private DBManager dbManager;
 
     //tells Spring to automatically use its own dependency features
     @Autowired
-    AuthenticationController(AccountManager accountManager, DBManager dbManager){
-        this.dbManager = dbManager;
+    AuthenticationController(AccountManager accountManager){
+
         this.accountManager = accountManager;
     }
 
-    @GetMapping("/test")
-    public void t() {
-        dbManager.connectToDB();
-    }
 
     @PostMapping(value = "/login")
     ResponseEntity<User> login(@RequestBody User user) {

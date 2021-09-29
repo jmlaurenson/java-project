@@ -1,5 +1,6 @@
 package com.example.javaproject.Authentication;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -10,12 +11,13 @@ import java.util.Optional;
 @Component
 public class AccountManager {
     Map<Integer, User> accounts = new HashMap<Integer, User>();
+    DBManager dbManager;
 
-    //Create temp dummy accounts
-    public void AccountManager(){
-        this.accounts.put(1, new User(1,"abc"));
-        this.accounts.put(2, new User(2,"bcd"));
-        this.accounts.put(3, new User(3,"cde"));
+    //tells Spring to automatically use its own dependency features
+    @Autowired
+    public  AccountManager(DBManager dbManager){
+            this.dbManager = dbManager;
+
     }
 
     //Checks if the userID is present in the map
@@ -30,8 +32,12 @@ public class AccountManager {
         if(currentUser.isEmpty()){
             user.setToken(createToken(user));
             accounts.put(user.getUserID(), user);
+            dbManager.addTableToDB(); //Creates a table in the database if none is present
+            dbManager.addUserToDB(user); //Add the current user to the database
+
         }
-        return currentUser.get().getToken();
+        //dbManager.printDB();
+        return accounts.get(user.getUserID()).getToken();
     }
 
     public String createToken(User user) {

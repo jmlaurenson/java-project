@@ -6,51 +6,53 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 import java.util.Properties;
 
 @Component
 public class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.h2.Driver";
-    static final String DB_URL = "jdbc:h2:~/test";
+    static final String DB_URL = "jdbc:h2:~/te";
 
-    public void connectToDB() {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            // STEP 1: Register JDBC driver
-            Class.forName(JDBC_DRIVER);
-            Properties properties = new Properties(); // Create Properties object
-            properties.put("user", "sa");         // Set user ID for connection
-            properties.put("password", "");     // Set password for connection
-            conn = DriverManager.getConnection(DB_URL,properties);
+    public DBManager(){
 
-            //STEP 3: Execute a query
-            System.out.println("Creating table in given database...");
+    }
 
+    public void addTableToDB() {
+        Optional<Connection> conn = null;
+            conn = getConnection();//DriverManager.getConnection(DB_URL,properties);
+            if(conn.isPresent()){
+                String sql = " CREATE TABLE IF NOT EXISTS ACCOUNT\n" +
+                        " (userID      INTEGER NOT NULL PRIMARY KEY,\n" +
+                        " password    VARCHAR(30) NOT NULL,\n" +
+                        " token    INTEGER NOT NULL);\n";
+
+                executeStatement(conn.get(), sql);
+            }
+    }
+
+    public void addUserToDB(User user) {
+        Optional<Connection> conn = null;
+        conn = getConnection();//DriverManager.getConnection(DB_URL,properties);
+        if(conn.isPresent()){
             String sql =  "INSERT INTO Account (userID, password, token) " +
-                    "VALUES (123, 'password1', 123);";
-            String sql1 = " CREATE TABLE IF NOT EXISTS TEAMS\n" +
-                    " (userID      INTEGER NOT NULL PRIMARY KEY,\n" +
-                    " password    VARCHAR(30) NOT NULL,\n" +
-                    " token    INTEGER NOT NULL);\n";
-            stmt = conn.createStatement();
-            stmt.executeUpdate(sql1);
+                    "VALUES ("+user.getUserID()+", '"+user.getPassword()+"', "+user.getToken()+");";
+
+            executeStatement(conn.get(), sql);
+        }
+    }
+
+    public void executeStatement(Connection conn, String sql){
+        Statement stmt = null;
+        try{
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
-            System.out.println("Created table in given database...");
-
-            // STEP 4: Clean-up environment
             stmt.close();
             conn.close();
         } catch(SQLException se) {
             //Handle errors for JDBC
-            System.out.println("Error 1");
             se.printStackTrace();
-        } catch(Exception e) {
-            //Handle errors for Class.forName
-            System.out.println("Error 2");
-            e.printStackTrace();
         } finally {
             //finally block used to close resources
             try{
@@ -63,8 +65,25 @@ public class DBManager {
             } catch(SQLException se){
                 System.out.println("Error 4");
                 se.printStackTrace();
-            } //end finally try
-        } //end try
+            }
+        }
+
     }
+
+    public Optional<Connection> getConnection(){
+        try {
+            Class.forName(JDBC_DRIVER);
+            Properties properties = new Properties(); // Create Properties object
+            properties.put("user", "sa");         // Set user ID for connection
+            properties.put("password", "");     // Set password for connection
+            return Optional.of(DriverManager.getConnection(DB_URL,properties));
+        }
+        catch(SQLException | ClassNotFoundException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
 
 }

@@ -3,18 +3,21 @@ package com.example.javaproject.Authentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class AccountManagerTest {
     private AccountManager accountManager;
 
-    @BeforeEach
-    void setUp() {
-        accountManager = new AccountManager();
-    }
 
     @Test
     @DisplayName("Check that a new account can be added and assigned a token")
