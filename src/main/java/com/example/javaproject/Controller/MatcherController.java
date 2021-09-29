@@ -34,7 +34,7 @@ public class MatcherController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Order>> index(@RequestHeader String token) {
+    public ResponseEntity<List<Order>> index(@RequestHeader int token) {
         authenticateUser(token);
         List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
                 .flatMap(Collection::stream)
@@ -44,34 +44,34 @@ public class MatcherController {
 
 
     @GetMapping(value = "/buyOrders")
-    ResponseEntity<List<Order>> fetchBuyOrders(@RequestHeader String token) {
+    ResponseEntity<List<Order>> fetchBuyOrders(@RequestHeader int token) {
         authenticateUser(token);
         List<Order> orders =matcher.getBuyOrders();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping(value = "/sellOrders")
-    ResponseEntity<List<Order>> fetchSellOrders(@RequestHeader String token) {
+    ResponseEntity<List<Order>> fetchSellOrders(@RequestHeader int token) {
         authenticateUser(token);
         List<Order> orders =matcher.getSellOrders();
         return ResponseEntity.ok(orders);
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order, @RequestHeader String token) {
+    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order, @RequestHeader int token) {
         authenticateUser(token, order.getAccount());
         matcher.completeTrade(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    public void authenticateUser(String token){
+    public void authenticateUser(int token){
         if (!accountManager.authenticateUser(token)){
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "Invalid token");
         }
     }
 
-    public void authenticateUser(String token, Integer account){
+    public void authenticateUser(int token, Integer account){
         if (!accountManager.authenticateUserByID(token, account)){
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "Invalid token");

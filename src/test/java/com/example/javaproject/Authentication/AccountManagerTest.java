@@ -74,7 +74,7 @@ class AccountManagerTest {
         //Arrange
         accountManager.setToken(new User(1, "Password"));
         //Act
-        boolean result = accountManager.authenticateUser("123");
+        boolean result = accountManager.authenticateUser(123);
         //Assert
         assertFalse(result, "INCORRECT USER AUTHENTICATED");
     }
@@ -96,7 +96,7 @@ class AccountManagerTest {
         //Arrange
         accountManager.setToken(new User(1, "Password"));
         //Act
-        boolean result = accountManager.authenticateUserByID("123", 1);
+        boolean result = accountManager.authenticateUserByID(123, 1);
         //Assert
         assertFalse(result, "INCORRECT USER AUTHENTICATED");
     }
