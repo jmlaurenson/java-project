@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Component
 public class AccountManager {
-    Map<Integer, User> accounts = new HashMap<Integer, User>();
+    //Map<Integer, User> accounts = new HashMap<Integer, User>();
     DBManager dbManager;
 
     //tells Spring to automatically use its own dependency features
@@ -33,12 +33,10 @@ public class AccountManager {
         // If user is not present, create a token and add the user to the map
         if(currentUser.isEmpty()){
             user.setToken(createToken(user));
-            accounts.put(user.getUserID(), user);
             dbManager.addTableToDB(); //Creates a table in the database if none is present
             dbManager.addUserToDB(user); //Add the current user to the database
         }
-        //dbManager.printDB();
-        return accounts.get(user.getUserID()).getToken();
+        return user.getToken();
     }
 
     public int createToken(User user) {

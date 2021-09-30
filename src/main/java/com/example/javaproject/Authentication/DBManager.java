@@ -10,7 +10,7 @@ import java.util.Properties;
 public class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.h2.Driver";
-    static final String DB_URL = "jdbc:h2:~/test3";
+    static final String DB_URL = "jdbc:h2:~/test4";
 
 
 
@@ -38,55 +38,6 @@ public class DBManager {
         }
     }
 
-    public void print(ResultSet resultSet){
-        try {
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-        int columnsNumber = 0;
-
-            columnsNumber = rsmd.getColumnCount();
-
-        while (resultSet.next()) {
-            for (int i = 1; i <= columnsNumber; i++) {
-                if (i > 1) System.out.print(",  ");
-                String columnValue = resultSet.getString(i);
-                System.out.print(columnValue + " " + rsmd.getColumnName(i));
-            }
-            System.out.println("");
-        }
-        } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    }
-
-    public ResultSet executeStatementSelect(Connection conn, String sql){
-        Statement stmt = null;
-        try{
-            stmt = conn.createStatement();
-            ResultSet result = stmt.executeQuery(sql);
-            print(result);
-            stmt.close();
-            return result;
-
-        } catch(SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try{
-                if(stmt!=null) stmt.close();
-            } catch(SQLException se2) {
-                System.out.println("Error 3");
-            } // nothing we can do
-            try {
-                if(conn!=null) conn.close();
-            } catch(SQLException se){
-                System.out.println("Error 4");
-                se.printStackTrace();
-            }
-        }
-        return null;
-    }
-
     public void executeStatement(Connection conn, String sql){
         Statement stmt = null;
         try{
@@ -102,17 +53,17 @@ public class DBManager {
             try{
                 if(stmt!=null) stmt.close();
             } catch(SQLException se2) {
-                System.out.println("Error 3");
+                System.out.println("SQL ERROR");
             } // nothing we can do
             try {
                 if(conn!=null) conn.close();
             } catch(SQLException se){
-                System.out.println("Error 4");
                 se.printStackTrace();
             }
         }
     }
 
+    //Connects to the database using the correct credentials and returns the connection
     public Optional<Connection> getConnection(){
         try {
             Class.forName(JDBC_DRIVER);
@@ -128,25 +79,7 @@ public class DBManager {
         }
     }
 
-    public boolean getUserByID(int token, int userID){
-        Optional<Connection> conn;
-        conn = getConnection();//DriverManager.getConnection(DB_URL,properties);
-        if(conn.isPresent()){
-            String sql =  "SELECT * FROM ACCOUNT WHERE token="+token+" AND userID="+userID+";";
-            try{
-                //Return true if a user is found
-                conn.get().close();
-                return executeStatementSelect(conn.get(), sql).next() ?true : false;
-            } catch(SQLException se) {
-                //Handle errors for JDBC
-                se.printStackTrace();
-            }
-        }
-        return false;
-
-
-    }
-
+    //Searches the database for a user with a specific token/ID and returns true if it is found
     public boolean getUser(String sql) {
         boolean result = false;
         Statement stmt = null;
@@ -176,6 +109,7 @@ public class DBManager {
         return result;
     }
 
+    //Searches for a user with an ID and returns a User object
     public Optional<User> checkUserExists(int userID) {
         Statement stmt = null;
         ResultSet resultSet = null;
@@ -190,21 +124,20 @@ public class DBManager {
             //Handle errors for JDBC
             se.printStackTrace();
         }
-
         try {
             if(resultSet.next()){
-            User user = new User(Integer.parseInt(resultSet.getString(0)), "");
-            user.setPassword(Integer.parseInt(resultSet.getString(1)));
-            user.setToken(Integer.parseInt(resultSet.getString(2)));
-            conn.get().close();
-            stmt.close();
-            return Optional.of(user);
-        }
+                //Create and return the user found
+                User user = new User(Integer.parseInt(resultSet.getString(0)), "");
+                //As the constructor hashes the password in the constructor, the password must be set directly
+                user.setPassword(Integer.parseInt(resultSet.getString(1)));
+                user.setToken(Integer.parseInt(resultSet.getString(2)));
+                conn.get().close();
+                stmt.close();
+                return Optional.of(user);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return Optional.empty();
     }
-
 }
