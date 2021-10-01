@@ -3,6 +3,8 @@ package com.example.javaproject.Authentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -22,6 +24,11 @@ class AccountManagerTest {
         accountManager =new AccountManager(dbManager);
     }
 
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
 
     @Test
     @DisplayName("Check that a new account can be added and assigned a token")
@@ -34,10 +41,10 @@ class AccountManagerTest {
 
         //Act
         Optional<User> result = accountManager.getUser(5);
-        int predictedToken = Objects.hash(Objects.hash("Password"), 5);
+        int predictedToken = Objects.hash(accountManager.getUser(5).get().getPassword(),5);
         //Assert
         assertAll(
-                () -> assertEquals(Objects.hash("Password"), result.get().getPassword(), "PASSWORD IS INCORRECT"),
+                () -> assertTrue(bCryptPasswordEncoder().matches("Password", result.get().getPassword()), "PASSWORD IS INCORRECT"),
                 () -> assertEquals(predictedToken, result.get().getToken(), "TOKEN IS INCORRECT")
         );
     }
@@ -59,14 +66,15 @@ class AccountManagerTest {
         //Act
         Optional<User> result1 = accountManager.getUser(1);
         Optional<User> result2 = accountManager.getUser(2);
-        int predictedToken1 = Objects.hash(Objects.hash("Password"), 1);
-        int predictedToken2 = Objects.hash(Objects.hash("Password2"), 2);
+        int predictedToken1 = Objects.hash(accountManager.getUser(1).get().getPassword(),1);
+        int predictedToken2 = Objects.hash(accountManager.getUser(2).get().getPassword(),2);
 
         //Assert
         assertAll(
-                () -> assertEquals(Objects.hash("Password"), result1.get().getPassword(), "PASSWORD IS INCORRECT"),
+                () -> assertTrue(bCryptPasswordEncoder().matches("Password",bCryptPasswordEncoder().encode("Password"))),
+                () -> assertTrue(bCryptPasswordEncoder().matches("Password",result1.get().getPassword()), "PASSWORD IS INCORRECT"),
                 () -> assertEquals(predictedToken1, result1.get().getToken(), "TOKEN IS INCORRECT"),
-                () -> assertEquals(Objects.hash("Password2"), result2.get().getPassword(), "PASSWORD IS INCORRECT"),
+                () -> assertTrue(bCryptPasswordEncoder().matches("Password2",result2.get().getPassword()), "PASSWORD IS INCORRECT"),
                 () -> assertEquals(predictedToken2, result2.get().getToken(), "TOKEN IS INCORRECT")
         );
     }

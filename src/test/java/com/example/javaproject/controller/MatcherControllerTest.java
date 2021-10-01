@@ -1,12 +1,18 @@
 package com.example.javaproject.controller;
 
+import com.example.javaproject.Authentication.AccountManager;
+import com.example.javaproject.Authentication.DBManager;
+import com.example.javaproject.Authentication.User;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,8 +20,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -31,20 +43,23 @@ public class MatcherControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Before
-    public void setUp() {
+    @Autowired
+    private  AccountManager accountManager;
+    @MockBean
+    private DBManager dbManager;
+
+    @BeforeEach
+    public void setUp(){
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
     @DisplayName("Check that getting an empty sell list returns a 204 error")
     void ensureThatEmptySellListReturnsNoContent() throws Exception {
-        MvcResult result = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"userID\":6,\"password\":\"password\"}")
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+        when(dbManager.getUser(anyString())).thenReturn(true);
+
         mockMvc.perform(get("/sellOrders")
-                        .header("token", result.getResponse().getHeaderValues("token"))
+                        .header("token", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
@@ -53,12 +68,9 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that getting an empty buy list returns a 200 error")
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
-        MvcResult result = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"userID\":6,\"password\":\"password\"}")
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+        when(dbManager.getUser(anyString())).thenReturn(true);
         mockMvc.perform(get("/buyOrders")
-                        .header("token", result.getResponse().getHeaderValues("token"))
+                        .header("token", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
@@ -67,12 +79,9 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that posting a new order returns a 201, created")
     void ensureThatAddOrderReturnsCreated() throws Exception {
-        MvcResult result = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"userID\":2,\"password\":\"password\"}")
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+        when(dbManager.getUser(anyString())).thenReturn(true);
         mockMvc.perform(post("/addOrder")
-                        .header("token", result.getResponse().getHeaderValues("token"))
+                        .header("token", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
                         .accept(MediaType.APPLICATION_JSON))
@@ -148,12 +157,9 @@ public class MatcherControllerTest {
     @Test
     @DisplayName("Check that getting a sell list returns 200, OK")
     void ensureThatNonEmptySellListReturns() throws Exception {
-        MvcResult result = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"userID\":2,\"password\":\"password\"}")
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+        when(dbManager.getUser(anyString())).thenReturn(true);
         mockMvc.perform(get("/sellOrders")
-                        .header("token", result.getResponse().getHeaderValues("token"))
+                        .header("token", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

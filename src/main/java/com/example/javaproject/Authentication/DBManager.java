@@ -129,7 +129,7 @@ public class DBManager {
                 //Create and return the user found
                 User user = new User(Integer.parseInt(resultSet.getString(0)), "");
                 //As the constructor hashes the password in the constructor, the password must be set directly
-                user.setPassword(Integer.parseInt(resultSet.getString(1)));
+                user.setPassword(resultSet.getString(1));
                 user.setToken(Integer.parseInt(resultSet.getString(2)));
                 conn.get().close();
                 stmt.close();

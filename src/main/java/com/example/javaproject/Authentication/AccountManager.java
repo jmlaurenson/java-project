@@ -3,14 +3,11 @@ package com.example.javaproject.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 @Component
 public class AccountManager {
-    //Map<Integer, User> accounts = new HashMap<Integer, User>();
     DBManager dbManager;
 
     //tells Spring to automatically use its own dependency features
@@ -24,7 +21,6 @@ public class AccountManager {
     public Optional<User> getUser(int userID){
         dbManager.addTableToDB(); //Creates a table in the database if none is present
         return dbManager.checkUserExists(userID);
-        //return this.accounts.get(userID)!=null ? Optional.of(this.accounts.get(userID)) : Optional.empty();
     }
 
     //If the user does not exist, generate and return a new token and add the user
