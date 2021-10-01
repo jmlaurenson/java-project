@@ -12,7 +12,7 @@ import java.util.Objects;
 public class User {
     private int userID;
     private int password;
-    private String token;
+    private int token;
 
     public User(int userID, String password){
         this.userID = userID;
