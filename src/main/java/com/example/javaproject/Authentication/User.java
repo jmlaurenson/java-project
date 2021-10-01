@@ -4,13 +4,10 @@ import lombok.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 @Getter
 @Setter
 @EqualsAndHashCode
-public class User implements Serializable {
+public class User {
     private int userID;
     private String password;
     private int token;
