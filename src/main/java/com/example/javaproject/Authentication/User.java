@@ -1,7 +1,6 @@
 package com.example.javaproject.Authentication;
-
+import java.util.Objects;
 import lombok.*;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Getter
@@ -18,7 +17,7 @@ public class User {
         System.out.println(password);
     }
 
-    @Bean
+
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }

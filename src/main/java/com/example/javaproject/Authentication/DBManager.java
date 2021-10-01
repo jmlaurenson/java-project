@@ -10,7 +10,7 @@ import java.util.Properties;
 public class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.h2.Driver";
-    static final String DB_URL = "jdbc:h2:~/test4";
+    static final String DB_URL = "jdbc:h2:~/test5";
 
 
 
@@ -20,7 +20,7 @@ public class DBManager {
             if(conn.isPresent()){
                 String sql = " CREATE TABLE IF NOT EXISTS ACCOUNT\n" +
                         " (userID      INTEGER NOT NULL PRIMARY KEY,\n" +
-                        " password    INTEGER NOT NULL,\n" +
+                        " password    VARCHAR(100) NOT NULL,\n" +
                         " token    INTEGER NOT NULL);\n";
 
                 executeStatement(conn.get(), sql);
@@ -130,6 +130,7 @@ public class DBManager {
                 User user = new User(Integer.parseInt(resultSet.getString(0)), "");
                 //As the constructor hashes the password in the constructor, the password must be set directly
                 user.setPassword(resultSet.getString(1));
+                //user.setPassword(Integer.parseInt(resultSet.getString(1)));
                 user.setToken(Integer.parseInt(resultSet.getString(2)));
                 conn.get().close();
                 stmt.close();
