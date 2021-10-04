@@ -1,13 +1,16 @@
 package com.example.javaproject.Authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @Component
-public class AccountManager {
+public class AccountManager implements UserDetailsService {
     DBManager dbManager;
 
     //tells Spring to automatically use its own dependency features
@@ -47,5 +50,20 @@ public class AccountManager {
     //Check the database for a user with a matching ID and token
     public boolean authenticateUserByID(int token, int userID){
         return dbManager.getUser("SELECT * FROM ACCOUNT WHERE token="+token+" AND userID="+userID+";");
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        int userId;
+        try {
+            userId = Integer.parseInt(username);
+        } catch (NumberFormatException e) {
+            throw new UsernameNotFoundException(username);
+        }
+        var user = getUser(userId);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException(username);
+        }
+        return org.springframework.security.core.userdetails.User.withUsername(username).password(user.get().getPassword()).authorities("USER").build();
     }
 }
