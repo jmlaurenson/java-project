@@ -17,7 +17,7 @@ public class AuthenticationController {
     }
 
 
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/login2")
     ResponseEntity<User> login(@RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).header("token", Integer.toString(accountManager.setToken(user))).body(user);
     }
