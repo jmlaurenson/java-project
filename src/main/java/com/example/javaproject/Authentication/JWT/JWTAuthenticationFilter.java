@@ -52,12 +52,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException {
+        var subject = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
+
         String token = JWT.create()
-                .withSubject(String.valueOf(((User) auth.getPrincipal()).getUserID()))
+                .withSubject(subject.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes()));
 
-        String body = ((User) auth.getPrincipal()).getUserID() + " " + token;
+        String body = token;
 
         res.getWriter().write(body);
         res.getWriter().flush();

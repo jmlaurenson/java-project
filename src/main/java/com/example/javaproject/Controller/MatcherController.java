@@ -58,8 +58,7 @@ public class MatcherController {
     }
 
     @PostMapping(value = "/addOrder")
-    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order, @RequestHeader int token) {
-        authenticateUser(token, order.getAccount());
+    ResponseEntity<Order> addOrder(@Valid @RequestBody Order order) {
         matcher.completeTrade(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }

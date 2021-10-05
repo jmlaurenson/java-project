@@ -21,8 +21,8 @@ public class User implements Serializable {
     @JsonProperty("token")
     private int token;
 
-    @JsonProperty("bCryptPasswordEncoder")
-    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+//    @JsonProperty("bCryptPasswordEncoder")
+//    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public User(){
 
@@ -30,7 +30,7 @@ public class User implements Serializable {
 
     public User(int userID, String password){
         this.userID = userID;
-        this.password = bCryptPasswordEncoder.encode(password);//Objects.hash(password);
+        this.password = password;
         System.out.println(password);
     }
 

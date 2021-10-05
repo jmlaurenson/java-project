@@ -3,17 +3,16 @@ package com.example.javaproject.controller;
 import com.example.javaproject.Authentication.AccountManager;
 import com.example.javaproject.Authentication.DBManager;
 import com.example.javaproject.Authentication.User;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,15 +22,15 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -44,13 +43,17 @@ public class MatcherControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private  AccountManager accountManager;
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @MockBean
+    private AccountManager accountManager;
+
     @MockBean
     private DBManager dbManager;
 
     @BeforeEach
-    public void setUp(){
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
+    public void setUp() {
+        this.mockMvc = webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
     }
 
     @Test
@@ -59,8 +62,8 @@ public class MatcherControllerTest {
         when(dbManager.getUser(anyString())).thenReturn(true);
 
         mockMvc.perform(get("/sellOrders")
-                        .header("token", 1)
-                        .accept(MediaType.APPLICATION_JSON))
+                .header("token", 1)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
     }
@@ -70,8 +73,8 @@ public class MatcherControllerTest {
     void ensureThatEmptyBuyListReturnsNoContent() throws Exception {
         when(dbManager.getUser(anyString())).thenReturn(true);
         mockMvc.perform(get("/buyOrders")
-                        .header("token", 1)
-                        .accept(MediaType.APPLICATION_JSON))
+                .header("token", 1)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
     }
@@ -81,10 +84,10 @@ public class MatcherControllerTest {
     void ensureThatAddOrderReturnsCreated() throws Exception {
         when(dbManager.getUser(anyString())).thenReturn(true);
         mockMvc.perform(post("/addOrder")
-                        .header("token", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
-                        .accept(MediaType.APPLICATION_JSON))
+                .header("token", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(content().json("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}"));
@@ -94,8 +97,8 @@ public class MatcherControllerTest {
     @DisplayName("Check that posting an invalid order with a string returns a relevant response")
     void ensureThatAnInvalidOrderThrowsError() throws Exception {
         MvcResult result = mockMvc.perform(post("/addOrder")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\": 2,\"price\": \"six\",\"quantity\": 4,\"action\": \"SELL\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\": 2,\"price\": \"six\",\"quantity\": 4,\"action\": \"SELL\"}"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("Cannot deserialize value of type `double` from String \"six\": not a valid `double` value"));
@@ -106,8 +109,8 @@ public class MatcherControllerTest {
     @DisplayName("Check that posting an invalid order with an invalid number returns a relevant response")
     void ensureThatAnInvalidOrderThrowsError2() throws Exception {
         MvcResult result = mockMvc.perform(post("/addOrder")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\": 2,\"price\": 0,\"quantity\": 4,\"action\": \"SELL\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\": 2,\"price\": 0,\"quantity\": 4,\"action\": \"SELL\"}"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("must be greater than or equal to 0.01"));
@@ -117,8 +120,8 @@ public class MatcherControllerTest {
     @DisplayName("Check that posting an invalid order with multiple invalid fields returns a relevant response")
     void ensureThatAnInvalidOrderThrowsMultipleErrors() throws Exception {
         MvcResult result = mockMvc.perform(post("/addOrder")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\": 2,\"price\": 0.999,\"quantity\": 0,\"action\": \"SELL\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\": 2,\"price\": 0.999,\"quantity\": 0,\"action\": \"SELL\"}"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
         assertAll(
@@ -131,8 +134,8 @@ public class MatcherControllerTest {
     @DisplayName("Check that posting an invalid order with all invalid fields returns a relevant response")
     void ensureThatAnInvalidOrderThrowsFourErrors() throws Exception {
         MvcResult result = mockMvc.perform(post("/addOrder")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\": -1,\"price\": 0.999,\"quantity\": 0,\"action\": null}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\": -1,\"price\": 0.999,\"quantity\": 0,\"action\": null}"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
         assertAll(
@@ -143,14 +146,13 @@ public class MatcherControllerTest {
         );
     }
 
-
     @Test
     @DisplayName("Check that posting an empty order returns a 400, invalid request")
     void ensureThatAnEmptyOrderThrowsError() throws Exception {
         mockMvc.perform(post("/addOrder")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"account\":,\"price\":,\"quantity\":,\"action\":}")
-                        .accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\":,\"price\":,\"quantity\":,\"action\":}")
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -159,11 +161,44 @@ public class MatcherControllerTest {
     void ensureThatNonEmptySellListReturns() throws Exception {
         when(dbManager.getUser(anyString())).thenReturn(true);
         mockMvc.perform(get("/sellOrders")
-                        .header("token", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                .header("token", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}]"));
-        }
+    }
+
+
+    // -------------
+
+
+    @Test
+    @DisplayName("Check that posting an empty order returns a 400, invalid request")
+    void testLogin() throws Exception {
+        when(accountManager.getUser(12345)).thenReturn(Optional.of(new User(12345, "testPassword")));
+        when(accountManager.loadUserByUsername(any())).thenReturn(
+            org.springframework.security.core.userdetails.User.withUsername("12345").password(passwordEncoder.encode("testPassword")).authorities("USER").build());
+
+        var response = mockMvc.perform(get("/user/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userID\": \"12345\", \"password\": \"testPassword\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var token = response.getResponse().getContentAsString();
+
+        mockMvc.perform(post("/addOrder")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"account\": 2,\"price\": 6.0,\"quantity\": 4.0,\"action\": \"SELL\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(content().json("{\"account\":2,\"price\":6.0,\"quantity\":4.0,\"action\":\"SELL\"}"));
+
+
+    }
+
 
 }
