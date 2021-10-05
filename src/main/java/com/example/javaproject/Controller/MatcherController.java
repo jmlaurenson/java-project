@@ -34,8 +34,7 @@ public class MatcherController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Order>> index(@RequestHeader int token) {
-        authenticateUser(token);
+    public ResponseEntity<List<Order>> index() {
         List<Order> orders =  Stream.of(matcher.getBuyOrders(), matcher.getSellOrders())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -44,15 +43,13 @@ public class MatcherController {
 
 
     @GetMapping(value = "/buyOrders")
-    ResponseEntity<List<Order>> fetchBuyOrders(@RequestHeader int token) {
-        authenticateUser(token);
+    ResponseEntity<List<Order>> fetchBuyOrders() {
         List<Order> orders =matcher.getBuyOrders();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping(value = "/sellOrders")
-    ResponseEntity<List<Order>> fetchSellOrders(@RequestHeader int token) {
-        authenticateUser(token);
+    ResponseEntity<List<Order>> fetchSellOrders() {
         List<Order> orders =matcher.getSellOrders();
         return ResponseEntity.ok(orders);
     }
