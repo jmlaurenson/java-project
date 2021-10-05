@@ -26,14 +26,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        System.out.println("Auth filter function");
         setFilterProcessesUrl("/user/login");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-        System.out.println("Attempting auth");
         try {
             User creds = new ObjectMapper()
                     .readValue(req.getInputStream(), User.class);
